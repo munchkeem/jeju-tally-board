@@ -44,6 +44,7 @@
   --sans:'Pretendard',-apple-system,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 body{font-family:var(--sans);background:
    radial-gradient(1200px 600px at 80% -10%, var(--bgtint1), transparent 60%),
    radial-gradient(900px 500px at -5% 5%, var(--bgtint2), transparent 55%),
@@ -107,6 +108,8 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
 .btn{background:var(--card2);border:1px solid var(--line2);color:var(--txt);font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:7px}
 .btn:hover{border-color:var(--gold);color:#fff}
+.btn:focus{outline:none}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .btn.primary{background:linear-gradient(180deg,var(--dem),var(--dem-d));border-color:var(--dem)}
 .btn.ghost{background:transparent}
 .btn.danger:hover{border-color:var(--loss);color:var(--loss)}
