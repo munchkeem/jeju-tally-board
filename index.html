@@ -594,14 +594,16 @@ function aggregate(){
 
 /* ---------- render KPI ---------- */
 function renderKPI(a){
-  const dd = a.demNow-SEATS22;
+  // 집계된 선거구 기준 민주 순증감 = 탈환 − 상실 (부분 집계에서도 정확)
+  const dd = a.gain - a.loss;
   const ddTxt = dd>0?`▲ +${dd}`:dd<0?`▼ ${dd}`:"± 0";
   const ddCls = dd>0?"up":dd<0?"down":"flat";
+  const rem = 32 - a.decided;
   const el=document.getElementById("kpis");
   el.innerHTML = `
    <div class="kpi dem"><span class="barpip"></span><div class="t">민주 지역구 의석 <small style="color:var(--txt3)">(현재)</small></div>
      <div class="big">${a.demNow}<small>/ 32석</small></div>
-     <div class="delta ${ddCls}">${ddTxt} <span style="color:var(--txt3);font-family:var(--sans);font-weight:500">vs 8회 ${SEATS22}석</span></div></div>
+     <div class="delta ${ddCls}">${ddTxt} <span style="color:var(--txt3);font-family:var(--sans);font-weight:500">8회 대비 순증감${rem>0?` · 미정 ${rem}곳`:''}</span></div></div>
    <div class="kpi gain"><span class="barpip"></span><div class="t">탈환 <small style="color:var(--txt3)">패→승</small></div>
      <div class="big">${a.gain}<small>곳</small></div>
      <div class="delta flat" style="color:var(--txt3)">민주 순증 후보지</div></div>
