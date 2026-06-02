@@ -26,7 +26,7 @@
 :root{
   --bg:#0a0e16; --bg2:#0e1420; --card:#141b29; --card2:#1a2333;
   --line:#23304a; --line2:#2e3d5c;
-  --txt:#e8eef7; --txt2:#9fb0cc; --txt3:#67789a;
+  --txt:#e8eef7; --txt2:#aebbd3; --txt3:#8a9bbe;
   --dem:#2f74e0; --dem-d:#1a4fa8;
   --ppp:#e8334a; --ppp-d:#a31226;
   --cho:#00a8e8; --jin:#d6001c; --ref:#ff7a1a; --jus:#ffd400; --ind:#7a89a8;
@@ -279,9 +279,87 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
   .foot{font-size:10.5px;line-height:1.65;margin-top:18px;padding-top:11px}
   #tip{font-size:10.5px;padding:6px 9px;max-width:170px}
 }
+
+/* ===== added: sticky summary bar ===== */
+.stickybar{position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;gap:14px;
+  padding:9px 18px;background:rgba(10,14,22,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line2);
+  font-size:12.5px;color:var(--txt2);transform:translateY(-110%);transition:transform .25s ease;pointer-events:none}
+.stickybar.show{transform:translateY(0);pointer-events:auto}
+.stickybar b{font-family:var(--mono);font-weight:700}
+.stickybar .sb-dem b{color:#76a8ff} .stickybar .sb-ppp b{color:var(--ppp)}
+.stickybar .sb-gain{color:var(--gain)} .stickybar .sb-loss{color:var(--loss)}
+.stickybar .sb-sep{width:1px;align-self:stretch;background:var(--line2)}
+.stickybar .sb-prog{flex:1;max-width:200px;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.stickybar .sb-prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f0d488);transition:width .4s}
+.stickybar .sb-pct{font-family:var(--mono);font-weight:700;color:var(--gold)}
+.stickybar .sb-title{font-weight:700;color:var(--txt);letter-spacing:-.01em}
+@media(max-width:560px){
+  .stickybar{gap:9px;padding:7px 12px;font-size:11.5px}
+  .stickybar .sb-title{display:none} .stickybar .sb-prog{max-width:none}
+}
+
+/* ===== added: demo warning bar ===== */
+.demobar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:rgba(255,77,94,.12);
+  border:1px solid rgba(255,77,94,.4);border-left:3px solid var(--loss);border-radius:12px;
+  padding:11px 15px;margin-bottom:16px;font-size:13px;color:#ffd0d5}
+.demobar b{color:#fff}
+.demobar button{margin-left:auto;background:transparent;border:1px solid rgba(255,77,94,.5);color:#ffd0d5;
+  font-family:var(--sans);font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer}
+.demobar button:hover{border-color:var(--loss);color:#fff}
+
+/* ===== added: howto close ===== */
+.howto{position:relative}
+.howto-x{position:absolute;top:8px;right:10px;background:transparent;border:0;color:var(--txt3);
+  font-size:14px;line-height:1;cursor:pointer;padding:2px 4px}
+.howto-x:hover{color:var(--txt)}
+
+/* ===== added: sort select + tools menu ===== */
+.sortsel{background:var(--bg2);border:1px solid var(--line);color:var(--txt2);font-family:var(--sans);
+  font-size:12px;font-weight:600;padding:8px 10px;border-radius:9px;cursor:pointer}
+.sortsel:focus{outline:none;border-color:var(--gold)}
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);z-index:40;background:var(--card2);border:1px solid var(--line2);
+  border-radius:11px;padding:6px;min-width:190px;display:flex;flex-direction:column;gap:2px;
+  box-shadow:0 12px 30px -10px rgba(0,0,0,.7)}
+.menu button{background:transparent;border:0;color:var(--txt);font-family:var(--sans);font-size:13px;font-weight:600;
+  text-align:left;padding:9px 11px;border-radius:8px;cursor:pointer}
+.menu button:hover{background:var(--bg2)}
+.menu button.danger{color:var(--loss)}
+.menu .mdiv{height:1px;background:var(--line);margin:3px 0}
+
+/* ===== added: card total + flash + collapsible 8회 ===== */
+.now .nums .totline{color:var(--txt3);font-size:10px;font-family:var(--mono)}
+@keyframes cardflash{0%{box-shadow:0 0 0 2px var(--gold),0 8px 26px -6px rgba(217,179,92,.6)}
+  100%{box-shadow:0 0 0 0 transparent,0 0 0 0 transparent}}
+.card.flash{animation:cardflash 1.2s ease-out}
+details.hist{padding:0 15px 12px;margin-top:7px;border-top:1px dashed var(--line)}
+details.hist > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:9px 0 7px}
+details.hist > summary::-webkit-details-marker{display:none}
+details.hist > summary .lbl8{font-size:9.5px;letter-spacing:.12em;color:var(--txt3);font-weight:700}
+details.hist > summary .mini8{font-family:var(--mono);font-size:10.5px;color:var(--txt3);margin-left:auto}
+details.hist > summary::after{content:'▾';color:var(--txt3);font-size:10px;transition:transform .2s;margin-left:4px}
+details.hist[open] > summary::after{transform:rotate(180deg)}
+details.hist[open] > summary .mini8{display:none}
+
+@media(max-width:480px){
+  details.hist{padding:0 13px 11px}
+  .demobar{font-size:12px;padding:10px 12px}
+}
 </style>
 </head>
 <body>
+
+<div class="stickybar" id="stickybar">
+  <span class="sb-title">실시간 집계</span>
+  <span class="sb-dem">민주 <b id="sbDem">0</b></span>
+  <span class="sb-ppp">국힘 <b id="sbPpp">0</b></span>
+  <span class="sb-sep"></span>
+  <span class="sb-gain">탈환 <b id="sbGain">0</b></span>
+  <span class="sb-loss">상실 <b id="sbLoss">0</b></span>
+  <span class="sb-sep"></span>
+  <span class="sb-prog"><i id="sbBar" style="width:0%"></i></span>
+  <span class="sb-pct" id="sbPct">0%</span>
+</div>
 
 <div class="wrap">
   <div class="hero">
@@ -297,7 +375,13 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
     </div>
   </div>
 
-  <div class="howto">
+  <div class="demobar" id="demobar" hidden>
+    ⚠️ 지금 표시 중인 값은 <b>가상(샘플) 데이터</b>입니다 — 실제 개표 결과가 아닙니다.
+    <button id="demoExit">실제 입력으로 비우기</button>
+  </div>
+
+  <div class="howto" id="howto">
+    <button class="howto-x" id="howtoX" aria-label="사용법 닫기" title="닫기">✕</button>
     <div class="step"><span class="num">1</span> 아래 선거구 카드의 <b>후보 옆 칸에 득표수</b>를 입력하면</div>
     <span class="arrow">→</span>
     <div class="step"><span class="num">2</span> 당선·득표율·1·2위 표차와 <b>8회(2022) 대비 변화</b>가 자동 계산됩니다</div>
@@ -326,13 +410,27 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
       <button data-f="hist22">8회 경합지</button>
       <button data-f="todo">미입력</button>
     </div>
+    <select class="sortsel" id="sortSel" aria-label="정렬">
+      <option value="default">기본 순서</option>
+      <option value="close">박빙순</option>
+      <option value="swing">스윙 큰 순</option>
+      <option value="recent">최근 확정순</option>
+    </select>
     <span class="spacer"></span>
     <span class="saved" id="savedAt"></span>
-    <button class="btn ghost" id="btnDemo">🎲 가상결과 채우기</button>
-    <button class="btn ghost" id="btnCsv">⤓ CSV 내보내기</button>
-    <button class="btn ghost danger" id="btnReset">초기화</button>
+    <div class="menuwrap">
+      <button class="btn ghost" id="btnMenu" aria-haspopup="true" aria-expanded="false">⋯ 도구</button>
+      <div class="menu" id="menu" hidden>
+        <button id="btnImg">🖼 이미지로 저장</button>
+        <button id="btnCsv">⤓ CSV 내보내기</button>
+        <div class="mdiv"></div>
+        <button id="btnDemo">🎲 가상결과 채우기</button>
+        <button id="btnReset" class="danger">전체 초기화</button>
+      </div>
+    </div>
   </div>
 
+  <div id="stickySentinel" style="height:1px"></div>
   <div id="ridings"></div>
 
   <div class="foot">
@@ -362,18 +460,39 @@ const DEM = "더불어민주당";
 const SEATS22 = DATA.filter(r=>r.result22==="승").length;
 const fmtGap = g => (g==null)?"":(g>0?"+":g<0?"-":"")+Math.abs(g).toLocaleString("ko-KR")+"표";
 
-let votes = {};      // id -> {candIndex: number}
+let votes = {};      // id -> {candName: number}
 let filter = "all";
+let sort = "default";
+let isDemo = false;
+const decidedAt = {};   // id -> sequence when first decided (this session)
+const lastState = {};   // id -> {decided, verdict} for change detection
+let seq = 0;
 
 /* ---------- storage ---------- */
+function migrateV1(old){
+  // v1 keyed votes by candidate index; remap to candidate name
+  const out={};
+  DATA.forEach(r=>{
+    const ov=old[r.id]; if(!ov) return;
+    const nv={};
+    r.candidates.forEach((c,i)=>{ if(ov[i]!=null && ov[i]!=="") nv[c.name]=ov[i]; });
+    if(Object.keys(nv).length) out[r.id]=nv;
+  });
+  return out;
+}
 function load(){
-  try{ const v = localStorage.getItem("jeju_tally_v1"); if(v){ votes = JSON.parse(v); } }catch(e){}
+  try{
+    const v2 = localStorage.getItem("jeju_tally_v2");
+    if(v2){ const o=JSON.parse(v2); votes=o.votes||{}; isDemo=!!o.demo; return; }
+    const v1 = localStorage.getItem("jeju_tally_v1");
+    if(v1){ votes = migrateV1(JSON.parse(v1)); save(); }
+  }catch(e){}
 }
 let saveT=null;
 function save(){
   clearTimeout(saveT);
   saveT=setTimeout(()=>{
-    try{ localStorage.setItem("jeju_tally_v1", JSON.stringify(votes));
+    try{ localStorage.setItem("jeju_tally_v2", JSON.stringify({votes, demo:isDemo}));
       document.getElementById("savedAt").textContent = "저장됨 "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
     }catch(e){}
   },400);
@@ -394,7 +513,7 @@ function compute(r){
       verdict:r.result22==="승"?"무투표사수":"무투표"};
   }
   const v = votes[r.id]||{};
-  const cs = r.candidates.map((c,i)=>({...c,votes:(v[i]==null||v[i]==="")?null:Number(v[i])}));
+  const cs = r.candidates.map((c,i)=>({...c,votes:(v[c.name]==null||v[c.name]==="")?null:Number(v[c.name])}));
   const any = cs.some(c=>c.votes!=null);
   const total = cs.reduce((s,c)=>s+(c.votes||0),0);
   if(!any || total<=0) return {decided:false,cs,total:0};
@@ -438,13 +557,13 @@ function renderKPI(a){
   const ddCls = dd>0?"up":dd<0?"down":"flat";
   const el=document.getElementById("kpis");
   el.innerHTML = `
-   <div class="kpi dem"><span class="barpip"></span><div class="t">민주 지역구 의석 (현재)</div>
+   <div class="kpi dem"><span class="barpip"></span><div class="t">민주 지역구 의석 <small style="color:var(--txt3)">(현재)</small></div>
      <div class="big">${a.demNow}<small>/ 32석</small></div>
      <div class="delta ${ddCls}">${ddTxt} <span style="color:var(--txt3);font-family:var(--sans);font-weight:500">vs 8회 ${SEATS22}석</span></div></div>
-   <div class="kpi gain"><span class="barpip"></span><div class="t">탈환 (8회 패→9회 승)</div>
+   <div class="kpi gain"><span class="barpip"></span><div class="t">탈환 <small style="color:var(--txt3)">패→승</small></div>
      <div class="big">${a.gain}<small>곳</small></div>
      <div class="delta flat" style="color:var(--txt3)">민주 순증 후보지</div></div>
-   <div class="kpi loss"><span class="barpip"></span><div class="t">상실 (8회 승→9회 패)</div>
+   <div class="kpi loss"><span class="barpip"></span><div class="t">상실 <small style="color:var(--txt3)">승→패</small></div>
      <div class="big">${a.loss}<small>곳</small></div>
      <div class="delta flat" style="color:var(--txt3)">방어 실패 지역</div></div>
    <div class="kpi cont"><span class="barpip"></span><div class="t">개표 반영 선거구</div>
@@ -453,6 +572,14 @@ function renderKPI(a){
   const pct=Math.round(a.decided/32*100);
   document.getElementById("progPct").textContent=pct+"%";
   document.getElementById("progBar").style.width=pct+"%";
+  // sticky summary bar
+  const ppNow=a.byParty["국민의힘"]||0;
+  document.getElementById("sbDem").textContent=a.demNow;
+  document.getElementById("sbPpp").textContent=ppNow;
+  document.getElementById("sbGain").textContent=a.gain;
+  document.getElementById("sbLoss").textContent=a.loss;
+  document.getElementById("sbBar").style.width=pct+"%";
+  document.getElementById("sbPct").textContent=pct+"%";
 }
 
 /* ---------- seat bars ---------- */
@@ -507,19 +634,24 @@ function renderScatter(){
     if(c.demMargin==null||r.margin22==null) return;
     const x=Math.max(lo,Math.min(hi,r.margin22)), y=Math.max(lo,Math.min(hi,c.demMargin));
     const improved=c.demMargin>=r.margin22;
+    const tt=`${r.name} · 8회 ${r.margin22>=0?'+':''}${r.margin22.toFixed(1)} → 9회 ${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)} (스윙 ${c.swing>=0?'+':''}${c.swing.toFixed(1)}%p)`;
     pts+=`<circle class="sc-dot" cx="${sx(x)}" cy="${sy(y)}" r="5.5"
       fill="${improved?'var(--gain)':'var(--loss)'}" fill-opacity=".82"
-      data-nm="${r.name}" data-x="${r.margin22.toFixed(1)}" data-y="${c.demMargin.toFixed(1)}" data-s="${c.swing.toFixed(1)}"/>`;
+      data-nm="${r.name}" data-x="${r.margin22.toFixed(1)}" data-y="${c.demMargin.toFixed(1)}" data-s="${c.swing.toFixed(1)}"><title>${tt}</title></circle>`;
   });
   if(!pts) g+=`<text x="${(sx(lo)+sx(hi))/2}" y="${(sy(hi)+sy(lo))/2}" text-anchor="middle" fill="var(--txt3)" font-size="11">득표수를 입력하면 선거구별 점이 찍힙니다</text>`;
   document.getElementById("scatter").innerHTML=g+pts;
+  const showTip=(d,cx,cy)=>{ const t=document.getElementById("tip");
+    t.innerHTML=`<div class="tn">${d.dataset.nm}</div><div class="tr">8회 ${d.dataset.x>=0?"+":""}${d.dataset.x} → 9회 ${d.dataset.y>=0?"+":""}${d.dataset.y}<br>스윙 ${d.dataset.s>=0?"+":""}${d.dataset.s}%p</div>`;
+    t.style.left=Math.min(cx+14,innerWidth-210)+"px"; t.style.top=Math.min(cy+14,innerHeight-70)+"px"; t.style.opacity=1; };
   document.querySelectorAll(".sc-dot").forEach(d=>{
-    d.onmousemove=e=>{ const t=document.getElementById("tip");
-      t.innerHTML=`<div class="tn">${d.dataset.nm}</div><div class="tr">8회 ${d.dataset.x>=0?"+":""}${d.dataset.x} → 9회 ${d.dataset.y>=0?"+":""}${d.dataset.y}<br>스윙 ${d.dataset.s>=0?"+":""}${d.dataset.s}%p</div>`;
-      t.style.left=Math.min(e.clientX+14,innerWidth-210)+"px"; t.style.top=(e.clientY+14)+"px"; t.style.opacity=1; };
+    d.onmousemove=e=>showTip(d,e.clientX,e.clientY);
     d.onmouseleave=()=>document.getElementById("tip").style.opacity=0;
+    // touch / tap: show tip pinned near the point, hide on next tap elsewhere
+    d.onclick=e=>{ e.stopPropagation(); const rc=d.getBoundingClientRect(); showTip(d,rc.left,rc.top); };
   });
 }
+document.addEventListener("click",e=>{ if(!e.target.closest(".sc-dot")) document.getElementById("tip").style.opacity=0; });
 
 /* ---------- riding cards ---------- */
 function swingTag(s){
@@ -542,6 +674,46 @@ function passFilter(r,c){
   if(filter==="hist22") return ["경합","경합우세","경합열세"].includes(r.grade22);
   if(filter==="todo") return !r.unopposed && !c.decided;
   return true;
+}
+function sortList(list){
+  if(sort==="default") return list;
+  const w=list.map(r=>({r,c:compute(r)}));
+  if(sort==="close"){
+    w.sort((a,b)=>{
+      const am=(a.c.decided&&a.c.demMargin!=null)?Math.abs(a.c.demMargin):1e9;
+      const bm=(b.c.decided&&b.c.demMargin!=null)?Math.abs(b.c.demMargin):1e9;
+      return am-bm || a.r.id-b.r.id;
+    });
+  }else if(sort==="swing"){
+    w.sort((a,b)=>{
+      const as=a.c.swing!=null?Math.abs(a.c.swing):-1;
+      const bs=b.c.swing!=null?Math.abs(b.c.swing):-1;
+      return bs-as || a.r.id-b.r.id;
+    });
+  }else if(sort==="recent"){
+    w.sort((a,b)=>((decidedAt[b.r.id]||-1)-(decidedAt[a.r.id]||-1)) || a.r.id-b.r.id);
+  }
+  return w.map(x=>x.r);
+}
+function nowHtml(c){
+  if(c.unopposed){
+    return `<div class="now"><span class="win" style="color:${pc(c.winParty)}">${c.winName} <span style="color:var(--txt3);font-size:11px">(${ps(c.winParty)})</span></span>
+      <span class="nums" style="color:var(--gold);font-weight:700">무투표 당선</span></div>`;
+  }
+  if(!c.decided){
+    return `<div class="now"><span style="color:var(--txt3);font-size:11.5px">개표 결과 대기 중…</span></div>`;
+  }
+  const hasDem = c.demMargin!=null;
+  const dmCol = !hasDem?'var(--txt2)':(c.demMargin>=0?'#76a8ff':'var(--ppp)');
+  const dmTxt = !hasDem?'민주 후보 없음':`${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)}%p · ${fmtGap(c.demVoteGap)}`;
+  const totTxt = c.total>0?`<span class="totline">합계 ${c.total.toLocaleString('ko-KR')}표</span>`:'';
+  return `<div class="now">
+    <span class="win" style="color:${pc(c.win.party)}">${c.win.name} <span style="color:var(--txt3);font-size:11px">(${ps(c.win.party)})</span></span>
+    <span class="nums">
+      <span class="numline" style="color:${dmCol}">${dmTxt}</span>
+      <span class="sub2">${c.grade||''}${swingTag(c.swing)}</span>
+      ${totTxt}
+    </span></div>`;
 }
 function cardHtml(r){
   const c=compute(r);
@@ -571,7 +743,7 @@ function cardHtml(r){
   }else{
     const hint = state==='todo'?`<div class="inputhint">✎ 후보별 득표수를 입력하세요</div>`:'';
     const rows = r.candidates.map((cand,i)=>{
-      const v=(votes[r.id]||{})[i];
+      const v=(votes[r.id]||{})[cand.name];
       const filled = v!=null && v!=="";
       const lead = c.decided && c.win && c.win.name===cand.name && (c.win.votes||0)>0;
       const rate = c.decided && c.total>0 && filled? ((Number(v)/c.total*100).toFixed(1)+"%") : "";
@@ -579,27 +751,13 @@ function cardHtml(r){
         <span class="dot" style="background:${pc(cand.party)}"></span>
         <span class="who">${cand.name}<span class="pty">${ps(cand.party)}</span>${lead?'<span class="lead">당선</span>':''}</span>
         <span class="rt">${rate}</span>
-        <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}" data-id="${r.id}" data-ci="${i}" aria-label="${cand.name} 득표수">
+        <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}" data-id="${r.id}" data-ci="${i}" data-nm="${cand.name}" aria-label="${cand.name} 득표수">
       </div>`;
     }).join("");
     body = hint+rows;
   }
   // result summary
-  let now="";
-  if(c.unopposed){
-    now=`<div class="now"><span class="win" style="color:${pc(c.winParty)}">${c.winName} <span style="color:var(--txt3);font-size:11px">(${ps(c.winParty)})</span></span>
-      <span class="nums" style="color:var(--gold);font-weight:700">무투표 당선</span></div>`;
-  }else if(c.decided){
-    const dmCol = c.demMargin>=0?'#76a8ff':'var(--ppp)';
-    now=`<div class="now">
-      <span class="win" style="color:${pc(c.win.party)}">${c.win.name} <span style="color:var(--txt3);font-size:11px">(${ps(c.win.party)})</span></span>
-      <span class="nums">
-        <span class="numline" style="color:${dmCol}">${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)}%p · ${fmtGap(c.demVoteGap)}</span>
-        <span class="sub2">${c.grade||''}${swingTag(c.swing)}</span>
-      </span></div>`;
-  }else{
-    now=`<div class="now"><span style="color:var(--txt3);font-size:11.5px">개표 결과 대기 중…</span></div>`;
-  }
+  const now = nowHtml(c);
   // 8회 후보 상세
   const cs22 = r.cands22||[];
   let histRows;
@@ -621,6 +779,7 @@ function cardHtml(r){
   }
   const histSum = r.margin22==null?"무투표 당선 (경쟁 없음)"
     :`민주 격차 ${r.margin22>0?'+':''}${r.margin22.toFixed(1)}%p${v22} · ${r.grade22}`;
+  const mini8 = r.margin22==null?"무투표":`${r.margin22>0?'+':''}${r.margin22.toFixed(1)}p · ${r.grade22}`;
 
   return `<div class="${cls}" data-card="${r.id}">
     <div class="cbar" style="background:${barC}"></div>
@@ -632,24 +791,27 @@ function cardHtml(r){
     <div class="seclabel now9">9회 (2026)</div>
     <div class="cbody">${body}</div>
     ${now}
-    <div class="hist">
-      <div class="seclabel">8회 (2022) 결과</div>
+    <details class="hist">
+      <summary><span class="lbl8">8회 (2022) 결과</span><span class="mini8">${mini8}</span></summary>
       ${histRows}
       <div class="histsum">${histSum}</div>
-    </div></div>`;
+    </details></div>`;
 }
 function renderRidings(){
   const regions=["제주시","서귀포시"];
   let html="";
   regions.forEach(reg=>{
-    const list=DATA.filter(r=>r.region===reg).filter(r=>passFilter(r,compute(r)));
+    let list=DATA.filter(r=>r.region===reg).filter(r=>passFilter(r,compute(r)));
     if(!list.length) return;
+    list=sortList(list);
     html+=`<div class="rhead">${reg} <span class="cnt">${list.length}석</span></div><div class="grid">`;
     html+=list.map(cardHtml).join("");
     html+=`</div>`;
   });
   if(!html) html=`<div style="text-align:center;color:var(--txt3);padding:40px">해당 조건의 선거구가 없습니다.</div>`;
   document.getElementById("ridings").innerHTML=html;
+  // resync change-detection baseline to what's now on screen
+  DATA.forEach(r=>{ const c=compute(r); lastState[r.id]={decided:c.decided,verdict:c.verdict}; });
 }
 
 /* ---------- render all ---------- */
@@ -661,10 +823,10 @@ function renderAll(){
 /* ---------- events ---------- */
 document.addEventListener("input",e=>{
   if(e.target.matches("input[data-id]")){
-    const id=+e.target.dataset.id, ci=+e.target.dataset.ci;
+    const id=+e.target.dataset.id, nm=e.target.dataset.nm;
     const raw=e.target.value.replace(/[^0-9]/g,'');
     votes[id]=votes[id]||{};
-    votes[id][ci]= raw===""? "" : raw;
+    votes[id][nm]= raw===""? "" : raw;
     e.target.value = raw===""? "" : Number(raw).toLocaleString('ko-KR');
     e.target.classList.toggle("filled", raw!=="");
     save();
@@ -679,7 +841,7 @@ function refreshCard(card,r){
   const c=compute(r);
   const state = c.unopposed?'unop':(c.decided?'done':'todo');
   card.querySelectorAll(".cand").forEach((row,i)=>{
-    const v=(votes[r.id]||{})[i];
+    const v=(votes[r.id]||{})[r.candidates[i].name];
     const filled = v!=null && v!=="";
     const rt=row.querySelector(".rt");
     rt.textContent = (c.decided&&c.total>0&&filled)?((Number(v)/c.total*100).toFixed(1)+"%"):"";
@@ -702,18 +864,14 @@ function refreshCard(card,r){
   card.querySelector(".cbar").style.background = c.decided?pc(c.win.party):"var(--line)";
   card.querySelector(".verdict").outerHTML = verdictBadge(c);
   const res=card.querySelector(".now");
-  if(res){
-    if(c.decided){
-      const dmCol = c.demMargin>=0?'#76a8ff':'var(--ppp)';
-      res.outerHTML=`<div class="now"><span class="win" style="color:${pc(c.win.party)}">${c.win.name} <span style="color:var(--txt3);font-size:11px">(${ps(c.win.party)})</span></span>
-        <span class="nums">
-          <span class="numline" style="color:${dmCol}">${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)}%p · ${fmtGap(c.demVoteGap)}</span>
-          <span class="sub2">${c.grade||''}${swingTag(c.swing)}</span>
-        </span></div>`;
-    }else{
-      res.outerHTML=`<div class="now"><span style="color:var(--txt3);font-size:11.5px">개표 결과 대기 중…</span></div>`;
-    }
+  if(res) res.outerHTML = nowHtml(c);
+  // change detection: flash + record decision order
+  const prev=lastState[r.id];
+  if(prev && (prev.decided!==c.decided || prev.verdict!==c.verdict)){
+    card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash");
   }
+  if(c.decided && (!prev || !prev.decided)) decidedAt[r.id]=++seq;
+  lastState[r.id]={decided:c.decided,verdict:c.verdict};
 }
 document.addEventListener("keydown",e=>{
   if(e.key==="Enter" && e.target.matches("input[data-id]")){
@@ -744,25 +902,38 @@ function makeFakeVotes(){
       const demVotes=Math.round(T*(50+target/2)/100);
       let rem=Math.max(0,T-demVotes);
       const others=cands.map((c,i)=>i).filter(i=>i!==demI);
-      others.forEach((oi,k)=>{ v[oi]= k===0 ? Math.round(rem*(others.length>1?0.82:1)) : Math.round(rem*0.18/(others.length-1)); });
-      v[demI]=demVotes;
+      others.forEach((oi,k)=>{ v[cands[oi].name]= k===0 ? Math.round(rem*(others.length>1?0.82:1)) : Math.round(rem*0.18/(others.length-1)); });
+      v[cands[demI].name]=demVotes;
     }else{
-      cands.forEach((c,i)=> v[i]=Math.round(T/cands.length*rnd(0.55,1.45)));
+      cands.forEach((c,i)=> v[c.name]=Math.round(T/cands.length*rnd(0.55,1.45)));
     }
     votes[r.id]=v;
   });
-  save(); renderAll();
+  isDemo=true; updateDemoBar(); save(); renderAll();
 }
+function updateDemoBar(){ document.getElementById("demobar").hidden = !isDemo; }
 document.getElementById("btnDemo").onclick=()=>{
-  if(Object.keys(votes).length && !confirm("기존 입력을 덮어쓰고 가상 결과로 채웁니다. 진행할까요?"))return;
+  closeMenu();
+  if(Object.keys(votes).length && !isDemo && !confirm("기존 입력을 덮어쓰고 가상 결과로 채웁니다. 진행할까요?"))return;
   makeFakeVotes();
 };
-document.getElementById("btnReset").onclick=async()=>{
-  if(!confirm("입력한 모든 득표수를 지웁니다. 진행할까요?"))return;
-  votes={}; try{localStorage.removeItem("jeju_tally_v1");}catch(e){}
+function doReset(){
+  votes={}; isDemo=false; updateDemoBar();
+  try{localStorage.removeItem("jeju_tally_v2");localStorage.removeItem("jeju_tally_v1");}catch(e){}
+  Object.keys(decidedAt).forEach(k=>delete decidedAt[k]);
   document.getElementById("savedAt").textContent=""; renderAll();
+}
+document.getElementById("btnReset").onclick=()=>{
+  closeMenu();
+  if(!confirm("입력한 모든 득표수를 지웁니다. 진행할까요?"))return;
+  doReset();
+};
+document.getElementById("demoExit").onclick=()=>{
+  if(!confirm("가상 데이터를 지우고 빈 상태로 돌아갑니다. 진행할까요?"))return;
+  doReset();
 };
 document.getElementById("btnCsv").onclick=()=>{
+  closeMenu();
   const rows=[["권역","선거구","8회당선정당","8회당선자","8회격차%p","8회표차","8회등급","9회당선정당","9회당선자","9회격차%p","9회표차","9회등급","스윙%p","판정","구도"]];
   DATA.forEach(r=>{
     const c=compute(r);
@@ -782,8 +953,56 @@ document.getElementById("btnCsv").onclick=()=>{
   a.href=u; a.download="제주_8회vs9회_개표비교.csv"; a.click(); URL.revokeObjectURL(u);
 };
 
+/* ---------- tools menu ---------- */
+function closeMenu(){
+  const m=document.getElementById("menu"); m.hidden=true;
+  document.getElementById("btnMenu").setAttribute("aria-expanded","false");
+}
+document.getElementById("btnMenu").onclick=e=>{
+  e.stopPropagation();
+  const m=document.getElementById("menu"); const open=m.hidden;
+  m.hidden=!open; document.getElementById("btnMenu").setAttribute("aria-expanded",String(open));
+};
+document.addEventListener("click",e=>{ if(!e.target.closest(".menuwrap")) closeMenu(); });
+
+/* ---------- image export (lazy html2canvas) ---------- */
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+document.getElementById("btnImg").onclick=async()=>{
+  closeMenu();
+  const btn=document.getElementById("btnImg"); const orig=btn.textContent;
+  btn.disabled=true; btn.textContent="이미지 생성 중…";
+  try{
+    if(!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
+    const node=document.querySelector(".wrap");
+    const canvas=await html2canvas(node,{backgroundColor:"#0a0e16",scale:Math.min(2,window.devicePixelRatio||1),windowWidth:node.scrollWidth});
+    const a=document.createElement("a"); a.href=canvas.toDataURL("image/png"); a.download="제주_개표상황판.png"; a.click();
+  }catch(err){ alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해 주세요."); }
+  finally{ btn.disabled=false; btn.textContent=orig; }
+};
+
+/* ---------- sort ---------- */
+document.getElementById("sortSel").onchange=e=>{ sort=e.target.value; renderRidings(); };
+
+/* ---------- howto dismiss ---------- */
+const HOWTO_KEY="jeju_howto_dismissed";
+try{ if(localStorage.getItem(HOWTO_KEY)) document.getElementById("howto").style.display="none"; }catch(e){}
+document.getElementById("howtoX").onclick=()=>{
+  document.getElementById("howto").style.display="none";
+  try{ localStorage.setItem(HOWTO_KEY,"1"); }catch(e){}
+};
+
+/* ---------- sticky summary bar visibility ---------- */
+(function(){
+  const sentinel=document.getElementById("stickySentinel");
+  const bar=document.getElementById("stickybar");
+  function onScroll(){ bar.classList.toggle("show", sentinel.getBoundingClientRect().top < 0); }
+  window.addEventListener("scroll", onScroll, {passive:true});
+  window.addEventListener("resize", onScroll);
+  onScroll();
+})();
+
 /* ---------- init ---------- */
-load(); renderAll();
+load(); updateDemoBar(); renderAll();
 </script>
 </body>
 </html>
