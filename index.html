@@ -495,7 +495,7 @@ details.hist[open] > summary .mini8{display:none}
 
   <div class="panels">
     <div class="panel">
-      <h3>정당별 의석 <span class="hint">8회 23석 → 9회 (실시간)</span></h3>
+      <h3>정당별 의석 <span class="hint" id="seatsHint">민주 8회 23석 → 9회 (실시간)</span></h3>
       <div id="seats"></div>
       <div class="legend" id="legend"></div>
     </div>
@@ -721,6 +721,7 @@ function renderSeats(a){
     return h;
   }
   const demc=a.byParty[DEM]||0, ppc=a.byParty["국민의힘"]||0;
+  document.getElementById("seatsHint").textContent=`민주 8회 ${c22[DEM]||0}석 → 9회 ${demc}석`;
   document.getElementById("seats").innerHTML=`
     <div class="seatrow"><div class="head"><span>제8회 (2022) 확정</span><span><b>민주 ${c22[DEM]||0}</b> · 국힘 ${c22["국민의힘"]||0} · 기타 ${32-(c22[DEM]||0)-(c22["국민의힘"]||0)}</span></div>
       <div class="stack">${bar(c22,32)}</div></div>
