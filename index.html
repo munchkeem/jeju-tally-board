@@ -194,6 +194,7 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
 .cand input::placeholder{color:var(--txt3);font-weight:400;font-size:12px;letter-spacing:0}
 .cand input:focus{border-color:var(--gold);background:var(--inputfocus);box-shadow:0 0 0 3px rgba(217,179,92,.14)}
 .cand input.filled{border-color:var(--line);font-weight:700}
+.cand input.win{border-color:var(--gold);color:var(--gold)}
 .card.todo .cand input:not(.filled){border-color:rgba(217,179,92,.5)}
 .cand input::-webkit-outer-spin-button,.cand input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .cand input[type=number]{-moz-appearance:textfield}
@@ -508,7 +509,7 @@ details.hist[open] > summary .mini8{display:none}
   <div class="toolbar">
     <div class="seg" id="viewSeg">
       <button data-v="cards" class="on">🃏 카드</button>
-      <button data-v="table">▦ 표 입력</button>
+      <button data-v="table">▦ 테이블</button>
     </div>
     <div class="seg" id="filterSeg">
       <button data-f="all" class="on">전체</button>
@@ -894,7 +895,7 @@ function cardHtml(r){
         <span class="dot" style="background:${pc(cand.party)}"></span>
         <span class="who">${cand.name}<span class="pty">${ps(cand.party)}</span>${lead?'<span class="lead">당선</span>':''}</span>
         <span class="rt">${rate}</span>
-        <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}" data-id="${r.id}" data-ci="${i}" data-nm="${cand.name}" aria-label="${cand.name} 득표수">
+        <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}${lead?' win':''}" data-id="${r.id}" data-ci="${i}" data-nm="${cand.name}" aria-label="${cand.name} 득표수">
       </div>`;
     }).join("");
     body = hint+rows;
@@ -1093,6 +1094,7 @@ function refreshCard(card,r){
     const inp=row.querySelector("input"); if(inp) inp.classList.toggle("filled",filled);
     const lead=row.querySelector(".lead");
     const isLead = c.decided && c.win && c.win.name===r.candidates[i].name && (c.win.votes||0)>0;
+    if(inp) inp.classList.toggle("win", isLead);
     if(isLead && !lead){ row.querySelector(".who").insertAdjacentHTML("beforeend",'<span class="lead">당선</span>'); }
     if(!isLead && lead){ lead.remove(); }
   });
