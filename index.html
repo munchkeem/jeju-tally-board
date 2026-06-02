@@ -761,10 +761,9 @@ function renderScatter(){
     if(c.demMargin==null||r.margin22==null) return;
     const x=Math.max(lo,Math.min(hi,r.margin22)), y=Math.max(lo,Math.min(hi,c.demMargin));
     const improved=c.demMargin>=r.margin22;
-    const tt=`${r.name} · 8회 ${r.margin22>=0?'+':''}${r.margin22.toFixed(1)} → 9회 ${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)} (스윙 ${c.swing>=0?'+':''}${c.swing.toFixed(1)}%p)`;
     pts+=`<circle class="sc-dot" cx="${sx(x)}" cy="${sy(y)}" r="5.5"
       fill="${improved?'var(--gain)':'var(--loss)'}" fill-opacity=".82"
-      data-nm="${r.name}" data-x="${r.margin22.toFixed(1)}" data-y="${c.demMargin.toFixed(1)}" data-s="${c.swing.toFixed(1)}"><title>${tt}</title></circle>`;
+      data-nm="${r.name}" data-x="${r.margin22.toFixed(1)}" data-y="${c.demMargin.toFixed(1)}" data-s="${c.swing.toFixed(1)}"></circle>`;
   });
   if(!pts) g+=`<text x="${(sx(lo)+sx(hi))/2}" y="${(sy(hi)+sy(lo))/2}" text-anchor="middle" fill="var(--txt3)" font-size="11">득표수를 입력하면 선거구별 점이 찍힙니다</text>`;
   document.getElementById("scatter").innerHTML=g+pts;
