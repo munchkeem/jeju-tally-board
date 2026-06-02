@@ -380,6 +380,24 @@ details.hist[open] > summary .mini8{display:none}
   padding:11px 18px;font-size:13px;font-weight:600;box-shadow:0 12px 30px -10px rgba(0,0,0,.6);
   opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== added: progress note + term legend + tappable chips ===== */
+.prognote{font-size:10px;color:var(--txt3);margin-top:5px;letter-spacing:.01em}
+.termbar{display:flex;flex-wrap:wrap;align-items:center;gap:7px 12px;background:var(--card);border:1px solid var(--line);
+  border-radius:11px;padding:9px 14px;margin-bottom:12px;font-size:11.5px;color:var(--txt2)}
+.termbar .tb-title{font-weight:700;color:var(--txt3);font-size:10px;letter-spacing:.08em}
+.termbar .tb-item{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.termbar .tb-item i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.termbar .tb-item em{color:var(--txt3);font-style:normal;font-size:10.5px}
+.termbar .i-gain{background:var(--gain)} .termbar .i-hold{background:var(--demtext)}
+.termbar .i-loss{background:var(--loss)} .termbar .i-miss{background:var(--ind)}
+.termbar .tb-sep{width:1px;height:13px;background:var(--line2)}
+.termbar .tb-swing{color:var(--txt3)} .termbar .tb-swing b{color:var(--txt2)}
+.verdict,.tag,.swing,.gradechip{cursor:help}
+@media(max-width:480px){
+  .termbar{font-size:11px;gap:6px 10px;padding:9px 12px}
+  .termbar .tb-item em{font-size:10px}
+}
 </style>
 </head>
 <body>
@@ -405,8 +423,9 @@ details.hist[open] > summary .mini8{display:none}
     </div>
     <div class="prog">
       <div class="pct" id="progPct">0%</div>
-      <div class="lbl">개표 반영</div>
+      <div class="lbl">선거구 반영</div>
       <div class="progbar"><i id="progBar" style="width:0%"></i></div>
+      <div class="prognote" id="progNote"></div>
     </div>
   </div>
 
@@ -469,6 +488,16 @@ details.hist[open] > summary .mini8{display:none}
         <button id="btnReset" class="danger">전체 초기화</button>
       </div>
     </div>
+  </div>
+
+  <div class="termbar">
+    <span class="tb-title">판정</span>
+    <span class="tb-item"><i class="i-gain"></i>탈환 <em>8회 패→9회 승</em></span>
+    <span class="tb-item"><i class="i-hold"></i>사수 <em>승→승</em></span>
+    <span class="tb-item"><i class="i-loss"></i>상실 <em>승→패</em></span>
+    <span class="tb-item"><i class="i-miss"></i>미탈환 <em>패→패</em></span>
+    <span class="tb-sep"></span>
+    <span class="tb-item tb-swing"><b>스윙</b> = 8회 득표율차 대비 9회 변화</span>
   </div>
 
   <div id="stickySentinel" style="height:1px"></div>
@@ -616,6 +645,8 @@ function renderKPI(a){
   const pct=Math.round(a.decided/32*100);
   document.getElementById("progPct").textContent=pct+"%";
   document.getElementById("progBar").style.width=pct+"%";
+  const unopp=DATA.filter(r=>r.unopposed).length;
+  document.getElementById("progNote").textContent=`무투표 당선 ${unopp}곳 자동 포함`;
   // sticky summary bar
   const ppNow=a.byParty["국민의힘"]||0;
   document.getElementById("sbDem").textContent=a.demNow;
@@ -695,7 +726,19 @@ function renderScatter(){
     d.onclick=e=>{ e.stopPropagation(); const rc=d.getBoundingClientRect(); showTip(d,rc.left,rc.top); };
   });
 }
-document.addEventListener("click",e=>{ if(!e.target.closest(".sc-dot")) document.getElementById("tip").style.opacity=0; });
+/* tap any explained chip (verdict/tag/swing/grade) to read its meaning — works on touch */
+function showInfoTip(text,x,y){
+  const t=document.getElementById("tip");
+  t.innerHTML=`<div class="tr" style="color:#e8eef7;font-family:var(--sans);font-weight:600">${text}</div>`;
+  t.style.left=Math.min(x+12,innerWidth-216)+"px";
+  t.style.top=Math.min(y+12,innerHeight-58)+"px";
+  t.style.opacity=1;
+}
+document.addEventListener("click",e=>{
+  const chip=e.target.closest(".verdict[title],.tag[title],.swing[title],.gradechip[title]");
+  if(chip){ showInfoTip(chip.getAttribute("title"), e.clientX, e.clientY); return; }
+  if(!e.target.closest(".sc-dot")) document.getElementById("tip").style.opacity=0;
+});
 
 /* ---------- riding cards ---------- */
 function swingTag(s){
@@ -707,10 +750,14 @@ function swingTag(s){
   return `<span class="swing ${cls}" style="background:${bg};color:${col}" title="8회(2022) 민주 득표율차 대비 변화량 (스윙)">8회 득표율차 대비 ${arrow}${Math.abs(s).toFixed(1)}%p</span>`;
 }
 function verdictBadge(c){
-  if(c.unopposed) return `<span class="verdict v-unop">무투표 당선</span>`;
-  if(!c.decided) return `<span class="verdict v-wait">미입력</span>`;
+  if(c.unopposed) return `<span class="verdict v-unop" title="단독 출마로 투표 없이 당선 확정">무투표 당선</span>`;
+  if(!c.decided) return `<span class="verdict v-wait" title="아직 득표수가 입력되지 않은 선거구">미입력</span>`;
   const map={"탈환":"v-gain","상실":"v-loss","사수":"v-hold","미탈환":"v-miss"};
-  return `<span class="verdict ${map[c.verdict]||'v-wait'}">${c.verdict}</span>`;
+  const tip={"탈환":"8회 패 → 9회 승 (민주가 새로 가져온 의석)",
+    "상실":"8회 승 → 9회 패 (민주가 내준 의석)",
+    "사수":"8회 승 → 9회 승 (민주가 지킨 의석)",
+    "미탈환":"8회 패 → 9회 패 (민주가 못 가져온 의석)"};
+  return `<span class="verdict ${map[c.verdict]||'v-wait'}" title="${tip[c.verdict]||''}">${c.verdict}</span>`;
 }
 function passFilter(r,c){
   if(filter==="all") return true;
