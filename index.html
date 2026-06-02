@@ -404,7 +404,7 @@ details.hist[open] > summary .mini8{display:none}
 .vtable{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
 .vtable thead th{position:sticky;top:0;background:var(--card2);color:var(--txt3);font-size:10.5px;font-weight:700;
   letter-spacing:.05em;text-align:left;padding:9px 12px;border-bottom:1px solid var(--line2);white-space:nowrap;z-index:2}
-.vtable thead th:nth-child(3),.vtable thead th:nth-child(4){text-align:right}
+.vtable thead th:nth-child(3){text-align:right}
 .vtable td{padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
 .vtable tbody tr:last-child td{border-bottom:0}
 .vtable tr.t-group td{background:var(--bg2);font-weight:800;font-size:13px;letter-spacing:-.01em;color:var(--txt)}
@@ -415,19 +415,22 @@ details.hist[open] > summary .mini8{display:none}
 .t-name{white-space:nowrap}
 .t-name .t-nm{font-weight:700}
 .t-name .t-sub{display:block;font-size:10px;color:var(--txt3);margin-top:1px}
-.t-inwrap{display:flex;flex-wrap:wrap;gap:7px 16px;align-items:center}
-.t-cand{display:inline-flex;align-items:center;gap:6px}
-.t-c-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.t-c-name{font-size:12px;font-weight:600;white-space:nowrap}
+/* fixed-width candidate blocks → inputs/rates line up in columns down the table */
+.t-inwrap{display:flex;flex-wrap:wrap;gap:6px 0}
+.t-cand{display:grid;grid-template-columns:11px minmax(0,1fr) 84px 44px;align-items:center;gap:7px;
+  flex:0 0 250px;max-width:250px;padding-right:18px}
+.t-c-dot{width:9px;height:9px;border-radius:50%}
+.t-c-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .t-c-name .t-c-pty{font-size:10px;color:var(--txt3);margin-left:3px;font-weight:500}
-.t-lead{color:#1a1205;background:var(--gold);font-size:9px;margin-left:5px;font-weight:800;padding:1px 5px;border-radius:5px}
-.t-cand input{width:90px;background:var(--bg2);border:1.5px solid var(--line2);color:var(--txt);font-family:var(--mono);
-  font-size:14px;font-weight:700;text-align:right;padding:6px 9px;border-radius:7px;outline:none;transition:.12s}
+.t-cand input{width:100%;background:var(--bg2);border:1.5px solid var(--line2);color:var(--txt);font-family:var(--mono);
+  font-size:14px;font-weight:700;text-align:right;padding:6px 8px;border-radius:7px;outline:none;transition:.12s}
 .t-cand input::placeholder{color:var(--txt3);font-weight:400;font-size:11px}
 .t-cand input:focus{border-color:var(--gold);background:var(--inputfocus);box-shadow:0 0 0 3px rgba(217,179,92,.14)}
 .t-cand input.filled{border-color:var(--line)}
+.t-cand.t-win .t-c-name{color:var(--txt);font-weight:800}
+.t-cand.t-win input{border-color:var(--gold);color:var(--gold)}
 .vtable tr.t-todo .t-cand input:not(.filled){border-color:rgba(217,179,92,.5)}
-.t-c-rate{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--txt2);min-width:40px;text-align:right}
+.t-c-rate{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--txt2);text-align:right}
 .t-total{font-family:var(--mono);text-align:right;color:var(--txt2);white-space:nowrap}
 .t-gap{font-family:var(--mono);white-space:nowrap;font-weight:700}
 .t-gap .t-gsub{color:var(--txt3);font-size:11px;font-weight:500;margin-left:7px}
@@ -956,20 +959,28 @@ function renderRidings(){
 function resyncState(){ DATA.forEach(r=>{ const c=compute(r); lastState[r.id]={decided:c.decided,verdict:c.verdict}; }); }
 
 /* ---------- table (spreadsheet-style) view ---------- */
+const PORDER=["더불어민주당","국민의힘","조국혁신당","진보당","개혁신당","정의당","무소속"];
+function orderedCands(r){
+  // 민주를 항상 첫 칸으로, 나머지는 정당 순서 — 표의 세로 정렬을 위해
+  return [...r.candidates].sort((a,b)=>{
+    const ia=PORDER.indexOf(a.party), ib=PORDER.indexOf(b.party);
+    return (ia<0?99:ia)-(ib<0?99:ib);
+  });
+}
 function tableRowHtml(r){
   const c=compute(r);
   let inputs;
   if(c.unopposed){
     inputs = `<span class="t-unop">★ 무투표 당선 — ${c.winName} (${ps(c.winParty)})</span>`;
   }else{
-    inputs = `<div class="t-inwrap">`+r.candidates.map(cand=>{
+    inputs = `<div class="t-inwrap">`+orderedCands(r).map(cand=>{
       const v=(votes[r.id]||{})[cand.name];
       const filled = v!=null && v!=="";
       const lead = c.decided && c.win && c.win.name===cand.name && (c.win.votes||0)>0;
       const rate = c.decided && c.total>0 && filled? ((Number(v)/c.total*100).toFixed(1)+"%") : "";
-      return `<span class="t-cand">
+      return `<span class="t-cand${lead?' t-win':''}">
         <span class="t-c-dot" style="background:${pc(cand.party)}"></span>
-        <span class="t-c-name">${cand.name}<span class="t-c-pty">${ps(cand.party)}</span>${lead?'<span class="t-lead">당선</span>':''}</span>
+        <span class="t-c-name">${cand.name}<span class="t-c-pty">${ps(cand.party)}</span></span>
         <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}" data-id="${r.id}" data-nm="${cand.name}" aria-label="${r.name} ${cand.name} 득표수">
         <span class="t-c-rate">${rate}</span>
       </span>`;
@@ -1019,17 +1030,16 @@ function refreshTableRow(r){
   const tr=document.querySelector(`#tableView tr[data-row="${r.id}"]`);
   if(!tr) return;
   const c=compute(r);
-  tr.querySelectorAll(".t-cand").forEach((cell,i)=>{
-    const cand=r.candidates[i]; if(!cand) return;
-    const v=(votes[r.id]||{})[cand.name];
+  tr.querySelectorAll(".t-cand").forEach((cell)=>{
+    const inp=cell.querySelector("input"); if(!inp) return;
+    const nm=inp.dataset.nm;
+    const v=(votes[r.id]||{})[nm];
     const filled = v!=null && v!=="";
-    const inp=cell.querySelector("input"); if(inp) inp.classList.toggle("filled",filled);
+    inp.classList.toggle("filled",filled);
     const rate=cell.querySelector(".t-c-rate");
     if(rate) rate.textContent=(c.decided&&c.total>0&&filled)?((Number(v)/c.total*100).toFixed(1)+"%"):"";
-    const nameEl=cell.querySelector(".t-c-name"), lead=cell.querySelector(".t-lead");
-    const isLead = c.decided && c.win && c.win.name===cand.name && (c.win.votes||0)>0;
-    if(isLead && !lead) nameEl.insertAdjacentHTML("beforeend",'<span class="t-lead">당선</span>');
-    if(!isLead && lead) lead.remove();
+    const isLead = c.decided && c.win && c.win.name===nm && (c.win.votes||0)>0;
+    cell.classList.toggle("t-win", isLead);
   });
   const totEl=tr.querySelector(".t-total"); if(totEl) totEl.textContent=c.decided?c.total.toLocaleString('ko-KR'):'';
   const gapEl=tr.querySelector(".t-gap");
