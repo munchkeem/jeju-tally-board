@@ -1,7 +1,7 @@
 {
-  "name": "제주도의원 개표 상황판",
+  "name": "제주도의원선거(지역구) 개표 상황판",
   "short_name": "제주 개표판",
-  "description": "제주도의원 지역구 8회 vs 9회 실시간 개표 상황판",
+  "description": "제주도의원 지역구 32곳의 제8회(2022)·제9회(2026) 개표 결과 비교.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
