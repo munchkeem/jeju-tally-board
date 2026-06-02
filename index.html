@@ -543,7 +543,7 @@ details.hist[open] > summary .mini8{display:none}
     <span class="tb-item"><i class="i-gain"></i>탈환 <em>8회 패→9회 승</em></span>
     <span class="tb-item"><i class="i-hold"></i>사수 <em>승→승</em></span>
     <span class="tb-item"><i class="i-loss"></i>상실 <em>승→패</em></span>
-    <span class="tb-item"><i class="i-miss"></i>미탈환 <em>패→패</em></span>
+    <span class="tb-item"><i class="i-miss"></i>탈환 실패 <em>패→패</em></span>
     <span class="tb-sep"></span>
     <span class="tb-item tb-swing"><b>스윙</b> = 8회 득표율차 대비 9회 변화</span>
   </div>
@@ -554,7 +554,7 @@ details.hist[open] > summary .mini8{display:none}
 
   <div class="foot">
     <b>등급 기준</b> (민주 기준 격차 %p): 경합 |Δ|&lt;3 · 경합우세/경합열세 3~7 · 우세/열세 ≥7 &nbsp;|&nbsp;
-    <b>판정</b>: 탈환(8회 패→9회 승) · 사수(승→승) · 상실(승→패) · 미탈환(패→패)<br>
+    <b>판정</b>: 탈환(8회 패→9회 승) · 사수(승→승) · 상실(승→패) · 탈환 실패(패→패)<br>
     각 선거구는 <b>득표율차(%p)와 1·2위 표차</b>를 함께 표기합니다(민주 기준, +우세/−열세). 8회 표차는 2022 개표 원자료 기준. &nbsp;|&nbsp;
     <b>관심 태그</b> — <b style="color:var(--demtext)">제주시을</b>: 김한규 의원 지역구 · <b style="color:var(--gold)">경합·경합우세·경합열세</b>: 8회 결과·판세 기반 자체 전망(모두 박빙권, 결과 단정 아님)<br>
     <b>무투표당선 8곳</b>은 득표 입력 없이 당선 확정으로 자동 집계되며 스윙·표차는 산출되지 않습니다. · 입력값은 이 브라우저에 자동 저장됩니다.
@@ -649,7 +649,7 @@ function compute(r){
   }
   const demWin = win.party===DEM;
   const was = r.result22==="승";
-  let verdict = was&&demWin?"사수":was&&!demWin?"상실":!was&&demWin?"탈환":"미탈환";
+  let verdict = was&&demWin?"사수":was&&!demWin?"상실":!was&&demWin?"탈환":"탈환 실패";
   const swing = (demMargin!=null && r.margin22!=null)? demMargin-r.margin22 : null;
   return {decided:true,cs,total,sorted,win,second,demMargin,demVoteGap,grade:gradeOf(demMargin),demWin,verdict,swing,
     voteGap:(win.votes||0)-(second.votes||0)};
@@ -802,11 +802,11 @@ function swingTag(s){
 function verdictBadge(c){
   if(c.unopposed) return `<span class="verdict v-unop" title="단독 출마로 투표 없이 당선 확정">무투표 당선</span>`;
   if(!c.decided) return `<span class="verdict v-wait" title="아직 득표수가 입력되지 않은 선거구">미입력</span>`;
-  const map={"탈환":"v-gain","상실":"v-loss","사수":"v-hold","미탈환":"v-miss"};
+  const map={"탈환":"v-gain","상실":"v-loss","사수":"v-hold","탈환 실패":"v-miss"};
   const tip={"탈환":"8회 패 → 9회 승 (민주가 새로 가져온 의석)",
     "상실":"8회 승 → 9회 패 (민주가 내준 의석)",
     "사수":"8회 승 → 9회 승 (민주가 지킨 의석)",
-    "미탈환":"8회 패 → 9회 패 (민주가 못 가져온 의석)"};
+    "탈환 실패":"8회 패 → 9회 패 (민주가 못 가져온 의석)"};
   return `<span class="verdict ${map[c.verdict]||'v-wait'}" title="${tip[c.verdict]||''}">${c.verdict}</span>`;
 }
 function passFilter(r,c){
