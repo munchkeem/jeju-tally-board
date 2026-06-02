@@ -828,7 +828,6 @@ function cardHtml(r){
       return `<span class="tag watch">${s}</span>`;
     }).join("");
   }
-  const m22 = r.margin22==null?"무투표":(r.margin22>0?"+":"")+r.margin22.toFixed(1)+"p";
   const v22 = r.votesGap22==null?"":" · "+fmtGap(r.votesGap22);
   // input body
   let body="";
@@ -873,7 +872,7 @@ function cardHtml(r){
   }
   const histSum = r.margin22==null?"무투표 당선 (경쟁 없음)"
     :`민주 격차 ${r.margin22>0?'+':''}${r.margin22.toFixed(1)}%p${v22} · ${r.grade22}`;
-  const mini8 = r.margin22==null?"무투표":`${r.margin22>0?'+':''}${r.margin22.toFixed(1)}p · ${r.grade22}`;
+  const mini8 = r.margin22==null?"무투표":`${r.margin22>0?'+':''}${r.margin22.toFixed(1)}%p · ${r.grade22}`;
 
   return `<div class="${cls}" data-card="${r.id}">
     <div class="cbar" style="background:${barC}"></div>
