@@ -1,0 +1,688 @@
+<meta charset="utf-8">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
+
+:root{
+  --bg:#0a0e16; --bg2:#0e1420; --card:#141b29; --card2:#1a2333;
+  --line:#23304a; --line2:#2e3d5c;
+  --txt:#e8eef7; --txt2:#9fb0cc; --txt3:#67789a;
+  --dem:#2f74e0; --dem-d:#1a4fa8;
+  --ppp:#e8334a; --ppp-d:#a31226;
+  --cho:#00a8e8; --jin:#d6001c; --ref:#ff7a1a; --jus:#ffd400; --ind:#7a89a8;
+  --gain:#19d39a; --gain-glow:rgba(25,211,154,.25);
+  --loss:#ff4d5e; --loss-glow:rgba(255,77,94,.22);
+  --gold:#d9b35c;
+  --mono:'JetBrains Mono',monospace;
+  --serif:'Pretendard',-apple-system,sans-serif;
+  --sans:'Pretendard',-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:
+   radial-gradient(1200px 600px at 80% -10%, rgba(47,116,224,.10), transparent 60%),
+   radial-gradient(900px 500px at -5% 5%, rgba(232,51,74,.07), transparent 55%),
+   var(--bg);
+  color:var(--txt);line-height:1.5;-webkit-font-smoothing:antialiased;padding:18px;min-height:100vh}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* header */
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;
+  border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:18px;position:relative}
+.hero::before{content:'';position:absolute;left:0;bottom:-1px;width:120px;height:2px;background:linear-gradient(90deg,var(--dem),var(--ppp))}
+.kicker{font-size:11px;letter-spacing:.32em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:6px}
+h1{font-weight:800;font-size:clamp(23px,3.6vw,35px);letter-spacing:-.035em;line-height:1.08}
+h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
+.sub{color:var(--txt2);font-size:13px;margin-top:7px}
+.prog{text-align:right;min-width:150px}
+.prog .pct{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--gold);line-height:1}
+.prog .lbl{font-size:11px;color:var(--txt3);letter-spacing:.1em;margin-top:4px}
+.progbar{height:5px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden;width:150px}
+.progbar > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#f0d488);transition:width .5s ease}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:linear-gradient(160deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:15px 16px;position:relative;overflow:hidden}
+.kpi .t{font-size:11px;color:var(--txt3);letter-spacing:.06em;font-weight:600;margin-bottom:9px}
+.kpi .big{font-family:var(--mono);font-size:32px;font-weight:700;line-height:1;display:flex;align-items:baseline;gap:7px}
+.kpi .big small{font-size:13px;color:var(--txt2);font-weight:500;font-family:var(--sans)}
+.kpi .delta{font-family:var(--mono);font-size:13px;font-weight:700;margin-top:8px}
+.up{color:var(--gain)} .down{color:var(--loss)} .flat{color:var(--txt3)}
+.kpi.dem{border-color:var(--dem-d)} .kpi.dem .big{color:#76a8ff}
+.kpi.gain .big{color:var(--gain)} .kpi.loss .big{color:var(--loss)}
+.kpi .barpip{position:absolute;right:0;top:0;bottom:0;width:3px}
+.kpi.dem .barpip{background:var(--dem)} .kpi.gain .barpip{background:var(--gain)}
+.kpi.loss .barpip{background:var(--loss)} .kpi.cont .barpip{background:var(--gold)}
+
+/* panels */
+.panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.panel h3{font-size:12px;letter-spacing:.1em;color:var(--txt2);text-transform:uppercase;font-weight:700;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.panel h3 .hint{font-size:10px;color:var(--txt3);letter-spacing:.02em;text-transform:none;font-weight:500}
+
+/* seat bar */
+.seatrow{margin-bottom:14px}
+.seatrow .head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;color:var(--txt2)}
+.seatrow .head b{font-family:var(--mono);color:var(--txt)}
+.stack{display:flex;height:26px;border-radius:6px;overflow:hidden;background:var(--bg2);border:1px solid var(--line)}
+.stack > span{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;transition:flex-basis .5s ease;min-width:0;white-space:nowrap;overflow:hidden}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--txt2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+
+/* scatter */
+.scatter{width:100%;height:300px}
+.scatter-note{font-size:11px;color:var(--txt3);line-height:1.65;margin-top:11px;padding-top:11px;border-top:1px solid var(--line)}
+.scatter-note b{font-weight:700}
+.scatter text{font-family:var(--mono);fill:var(--txt3);font-size:10px}
+.sc-dot{cursor:pointer;transition:r .15s}
+.sc-dot:hover{stroke:#fff;stroke-width:1.5}
+
+/* controls */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.btn{background:var(--card2);border:1px solid var(--line2);color:var(--txt);font-family:var(--sans);font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:7px}
+.btn:hover{border-color:var(--gold);color:#fff}
+.btn.primary{background:linear-gradient(180deg,var(--dem),var(--dem-d));border-color:var(--dem)}
+.btn.ghost{background:transparent}
+.btn.danger:hover{border-color:var(--loss);color:var(--loss)}
+.seg{display:inline-flex;background:var(--bg2);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{background:transparent;border:0;color:var(--txt3);font-family:var(--sans);font-size:12px;font-weight:600;padding:8px 13px;cursor:pointer;transition:.15s}
+.seg button.on{background:var(--card2);color:var(--txt)}
+.spacer{flex:1}
+.saved{font-size:11px;color:var(--txt3);font-family:var(--mono)}
+
+/* region head */
+.rhead{display:flex;align-items:center;gap:10px;margin:18px 0 12px;font-weight:800;font-size:16px;letter-spacing:-.02em}
+.rhead .cnt{font-family:var(--mono);font-size:12px;color:var(--txt3);font-weight:500}
+.rhead::after{content:'';flex:1;height:1px;background:var(--line)}
+
+/* riding grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;transition:.18s;position:relative}
+.card:hover{border-color:var(--line2)}
+.card.watch{border-color:#3a4a2e;box-shadow:inset 0 0 0 1px rgba(217,179,92,.15)}
+.card.gain{box-shadow:0 0 0 1px var(--gain),0 6px 22px -8px var(--gain-glow)}
+.card.loss{box-shadow:0 0 0 1px var(--loss),0 6px 22px -8px var(--loss-glow)}
+.cbar{height:4px;background:var(--line);transition:.4s}
+.ctop{padding:13px 15px 9px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ctop .nm{font-weight:700;font-size:15px;letter-spacing:-.01em}
+.ctop .meta{font-size:11px;color:var(--txt3);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:9.5px;font-weight:700;padding:2px 6px;border-radius:5px;letter-spacing:.03em;white-space:nowrap}
+.tag.watch{background:rgba(217,179,92,.15);color:var(--gold)}
+.tag.eul{background:rgba(47,116,224,.18);color:#76a8ff}
+.tag.comp{background:rgba(217,179,92,.15);color:var(--gold)}
+.verdict{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.v-gain{background:var(--gain-glow);color:var(--gain)}
+.v-loss{background:var(--loss-glow);color:var(--loss)}
+.v-hold{background:rgba(47,116,224,.16);color:#76a8ff}
+.v-miss{background:rgba(122,137,168,.16);color:var(--txt2)}
+.v-wait{background:rgba(122,137,168,.12);color:var(--txt3)}
+.v-unop{background:rgba(217,179,92,.14);color:var(--gold)}
+
+/* section labels */
+.seclabel{font-size:9.5px;letter-spacing:.12em;color:var(--txt3);font-weight:700;padding:9px 15px 2px}
+.seclabel.now9{color:#7d93b8;padding-top:7px}
+/* 9회 result line */
+.now{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:5px 15px 2px}
+.now .win{font-weight:700;font-size:13px}
+.now .nums{font-family:var(--mono);font-size:12px;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.now .nums .numline{font-weight:700}
+.now .nums .sub2{color:var(--txt2);font-size:11px;display:flex;align-items:center;gap:0}
+.now .nums .gap{color:var(--txt2)}
+/* 8회 history block */
+.hist{padding:3px 15px 12px;margin-top:7px;border-top:1px dashed var(--line)}
+.hcand{display:flex;align-items:center;gap:8px;padding:2.5px 0;font-size:11.5px}
+.hcand .hdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.hcand .hwho{flex:1;min-width:0;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcand .hwho .hpty{color:var(--txt3);font-size:9.5px;margin-left:4px}
+.hcand .hwho .hwin{color:var(--txt2);font-size:8.5px;margin-left:6px;font-weight:700;border:1px solid var(--line2);padding:1px 5px;border-radius:4px;vertical-align:middle}
+.hcand .hr{font-family:var(--mono);color:var(--txt3);font-size:10.5px;width:42px;text-align:right;flex-shrink:0}
+.hcand .hv{font-family:var(--mono);color:var(--txt);font-size:11.5px;font-weight:600;width:54px;text-align:right;flex-shrink:0}
+.histsum{font-family:var(--mono);font-size:11px;color:var(--txt2);margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+.swing{font-family:var(--mono);font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px;margin-left:6px}
+
+/* inputs */
+/* input area */
+.cbody{padding-top:1px}
+.inputhint{font-size:11px;font-weight:600;letter-spacing:.01em;padding:3px 15px 6px;display:flex;align-items:center;gap:6px;color:var(--txt3)}
+.card.todo .inputhint{color:var(--gold)}
+.card.todo{border-color:#4a3f22}
+.card.todo .cbar{background:repeating-linear-gradient(90deg,var(--gold) 0 8px,transparent 8px 15px);opacity:.5}
+
+.cand{display:flex;align-items:center;gap:10px;padding:7px 15px}
+.cand .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cand .who{flex:1;min-width:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cand .who .pty{font-size:10.5px;color:var(--txt3);margin-left:6px;font-weight:500}
+.cand .who .lead{color:#1a1205;background:var(--gold);font-size:9.5px;margin-left:7px;font-weight:800;padding:2px 6px;border-radius:5px;letter-spacing:.02em}
+.cand .rt{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--txt2);width:48px;text-align:right;flex-shrink:0}
+.cand input{width:112px;flex-shrink:0;background:var(--bg2);border:1.5px solid var(--line2);color:var(--txt);font-family:var(--mono);font-size:15px;font-weight:700;text-align:right;padding:8px 11px;border-radius:8px;outline:none;transition:.15s}
+.cand input::placeholder{color:var(--txt3);font-weight:400;font-size:12px;letter-spacing:0}
+.cand input:focus{border-color:var(--gold);background:#0a0f1a;box-shadow:0 0 0 3px rgba(217,179,92,.14)}
+.cand input.filled{border-color:var(--line);font-weight:700}
+.card.todo .cand input:not(.filled){border-color:rgba(217,179,92,.5)}
+.cand input::-webkit-outer-spin-button,.cand input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.cand input[type=number]{-moz-appearance:textfield}
+.unop-badge{margin:4px 15px 12px;background:rgba(217,179,92,.10);border:1px solid rgba(217,179,92,.32);border-radius:10px;padding:11px 13px;font-size:13px;color:var(--gold);display:flex;align-items:center;gap:9px;font-weight:600}
+.unop-badge .star{font-size:15px;flex-shrink:0}
+
+/* howto banner */
+.howto{display:flex;align-items:center;gap:8px 16px;background:linear-gradient(100deg,rgba(217,179,92,.10),rgba(47,116,224,.05));border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;padding:12px 17px;margin-bottom:16px;font-size:13px;color:var(--txt2);flex-wrap:wrap}
+.howto .step{display:flex;align-items:center;gap:8px}
+.howto .step b{color:var(--txt)}
+.howto .num{display:inline-flex;width:19px;height:19px;background:var(--gold);color:#1a1205;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.howto .arrow{color:var(--txt3);font-size:15px}
+
+/* tooltip */
+#tip{position:fixed;pointer-events:none;background:#05080f;border:1px solid var(--line2);border-radius:8px;padding:8px 11px;font-size:11px;opacity:0;transition:opacity .12s;z-index:50;max-width:200px}
+#tip .tn{font-weight:700;margin-bottom:3px} #tip .tr{font-family:var(--mono);color:var(--txt2)}
+
+.foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--txt3);line-height:1.7}
+.foot b{color:var(--txt2)}
+@media(max-width:780px){
+  .kpis{grid-template-columns:repeat(2,1fr)} .panels{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr} body{padding:12px}
+  .seg{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .seg button{flex:1 0 auto;white-space:nowrap}
+}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="kicker">Jeju Provincial Council · Live Tally</div>
+      <h1>제주도의원 지역구 개표 상황판<span class="v"> — 8회 vs 9회</span></h1>
+      <div class="sub">후보 득표수를 입력하면 당선·격차·등급과 <b style="color:var(--gold)">2022년(8회) 대비 스윙·탈환·상실</b>이 실시간 계산됩니다 · 지역구 32석</div>
+    </div>
+    <div class="prog">
+      <div class="pct" id="progPct">0%</div>
+      <div class="lbl">개표 반영</div>
+      <div class="progbar"><i id="progBar" style="width:0%"></i></div>
+    </div>
+  </div>
+
+  <div class="howto">
+    <div class="step"><span class="num">1</span> 아래 선거구 카드의 <b>후보 옆 칸에 득표수</b>를 입력하면</div>
+    <span class="arrow">→</span>
+    <div class="step"><span class="num">2</span> 당선·득표율·1·2위 표차와 <b>8회(2022) 대비 변화</b>가 자동 계산됩니다</div>
+  </div>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="panels">
+    <div class="panel">
+      <h3>정당별 의석 <span class="hint">8회 23석 → 9회 (실시간)</span></h3>
+      <div id="seats"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="panel">
+      <h3>스윙 산점도 <span class="hint">점 1개 = 선거구</span></h3>
+      <svg class="scatter" id="scatter" viewBox="0 0 460 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="scatter-note">가로축은 8회, 세로축은 9회의 <b>민주 격차(%p)</b>입니다. 점이 <b style="color:var(--gold)">45° 동률선보다 위</b>면 8회보다 득표차가 커진 것(<b style="color:var(--gain)">초록</b>), 아래면 줄어든 것(<b style="color:var(--loss)">빨강</b>). <b style="color:var(--gain)">왼쪽 위</b> 구역은 졌다가 이긴 곳(탈환), <b style="color:var(--loss)">오른쪽 아래</b>는 이겼다가 진 곳(상실)입니다.</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="seg" id="filterSeg">
+      <button data-f="all" class="on">전체</button>
+      <button data-f="eul">제주시을</button>
+      <button data-f="forecast">경합 전망</button>
+      <button data-f="hist22">8회 경합지</button>
+      <button data-f="todo">미입력</button>
+    </div>
+    <span class="spacer"></span>
+    <span class="saved" id="savedAt"></span>
+    <button class="btn ghost" id="btnDemo">🎲 가상결과 채우기</button>
+    <button class="btn ghost" id="btnCsv">⤓ CSV 내보내기</button>
+    <button class="btn ghost danger" id="btnReset">초기화</button>
+  </div>
+
+  <div id="ridings"></div>
+
+  <div class="foot">
+    <b>등급 기준</b> (민주 기준 격차 %p): 경합 |Δ|&lt;3 · 경합우세/경합열세 3~7 · 우세/열세 ≥7 &nbsp;|&nbsp;
+    <b>판정</b>: 탈환(8회 패→9회 승) · 사수(승→승) · 상실(승→패) · 미탈환(패→패)<br>
+    각 선거구는 <b>득표율차(%p)와 1·2위 표차</b>를 함께 표기합니다(민주 기준, +우세/−열세). 8회 표차는 2022 개표 원자료 기준. &nbsp;|&nbsp;
+    <b>관심 태그</b> — <b style="color:#76a8ff">제주시을</b>: 김한규 의원 지역구 · <b style="color:var(--gold)">경합·경합우세·경합열세</b>: 8회 결과·판세 기반 자체 전망(모두 박빙권, 결과 단정 아님)<br>
+    <b>무투표당선 8곳</b>은 득표 입력 없이 당선 확정으로 자동 집계되며 스윙·표차는 산출되지 않습니다. · 입력값은 이 브라우저에 자동 저장됩니다.
+  </div>
+</div>
+<div id="tip"></div>
+
+<script>
+const DATA = [{"id": 1, "region": "제주시", "name": "일도1·이도1·건입", "fullName": "일도1동·이도1동·건입동선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "한권"}], "unopposed": true, "unopposedWinner": "한권", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "한권", "margin22": 5.1, "grade22": "경합우세", "result22": "승", "unopposed22": false, "votesGap22": 432, "cands22": [{"party": "더불어민주당", "name": "한권", "votes": 4471}, {"party": "국민의힘", "name": "박왕철", "votes": 4039}]}, {"id": 2, "region": "제주시", "name": "일도2동", "fullName": "일도2동선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "박호형"}, {"party": "국민의힘", "name": "박현욱"}, {"party": "정의당", "name": "강순아"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "박호형", "margin22": 18.1, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 2627, "cands22": [{"party": "더불어민주당", "name": "박호형", "votes": 8580}, {"party": "정의당", "name": "박건도", "votes": 5953}]}, {"id": 3, "region": "제주시", "name": "이도2동갑", "fullName": "이도2동갑선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "김기환"}], "unopposed": true, "unopposedWinner": "김기환", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "김기환", "margin22": 5.5, "grade22": "경합우세", "result22": "승", "unopposed22": false, "votesGap22": 643, "cands22": [{"party": "더불어민주당", "name": "김기환", "votes": 6222}, {"party": "국민의힘", "name": "강철호", "votes": 5579}]}, {"id": 4, "region": "제주시", "name": "이도2동을", "fullName": "이도2동을선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "한동수"}, {"party": "진보당", "name": "송경남"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "한동수", "margin22": 7.2, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 741, "cands22": [{"party": "더불어민주당", "name": "한동수", "votes": 5487}, {"party": "국민의힘", "name": "김명만", "votes": 4746}]}, {"id": 5, "region": "제주시", "name": "삼도1·2동", "fullName": "삼도1동·삼도2동선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "정민구"}, {"party": "국민의힘", "name": "윤용팔"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "정민구", "margin22": 7.9, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 728, "cands22": [{"party": "더불어민주당", "name": "정민구", "votes": 4987}, {"party": "국민의힘", "name": "윤용팔", "votes": 4259}]}, {"id": 6, "region": "제주시", "name": "용담1·2동", "fullName": "용담1동·용담2동선거구", "interest": "경합열세", "candidates": [{"party": "더불어민주당", "name": "이창민"}, {"party": "국민의힘", "name": "김황국"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "김황국", "margin22": -29.3, "grade22": "열세", "result22": "패", "unopposed22": false, "votesGap22": -2664, "cands22": [{"party": "더불어민주당", "name": "곽성규", "votes": 3208}, {"party": "국민의힘", "name": "김황국", "votes": 5872}]}, {"id": 7, "region": "제주시", "name": "화북동", "fullName": "화북동선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "강성의"}], "unopposed": true, "unopposedWinner": "강성의", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "강성의", "margin22": 1.0, "grade22": "경합", "result22": "승", "unopposed22": false, "votesGap22": 110, "cands22": [{"party": "더불어민주당", "name": "강성의", "votes": 5465}, {"party": "국민의힘", "name": "고경남", "votes": 5355}]}, {"id": 8, "region": "제주시", "name": "삼양·봉개동", "fullName": "삼양동·봉개동선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "박안수"}], "unopposed": true, "unopposedWinner": "박안수", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "김경미", "margin22": 11.8, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 1558, "cands22": [{"party": "더불어민주당", "name": "김경미", "votes": 7392}, {"party": "국민의힘", "name": "한영진", "votes": 5834}]}, {"id": 9, "region": "제주시", "name": "아라동갑", "fullName": "아라동갑선거구", "interest": "제주시을", "candidates": [{"party": "더불어민주당", "name": "김봉현"}], "unopposed": true, "unopposedWinner": "김봉현", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "홍인숙", "margin22": 2.0, "grade22": "경합", "result22": "승", "unopposed22": false, "votesGap22": 193, "cands22": [{"party": "더불어민주당", "name": "홍인숙", "votes": 3825}, {"party": "국민의힘", "name": "김대우", "votes": 3632}, {"party": "진보당", "name": "양영수", "votes": 2116}]}, {"id": 10, "region": "제주시", "name": "아라동을", "fullName": "아라동을선거구", "interest": "제주시을 · 경합우세", "candidates": [{"party": "더불어민주당", "name": "정현철"}, {"party": "진보당", "name": "양영수"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "강경흠", "margin22": 13.3, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 922, "cands22": [{"party": "더불어민주당", "name": "강경흠", "votes": 3386}, {"party": "국민의힘", "name": "신창근", "votes": 2464}, {"party": "정의당", "name": "고은실", "votes": 1079}]}, {"id": 11, "region": "제주시", "name": "오라동", "fullName": "오라동선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "강정범"}, {"party": "진보당", "name": "부람준"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "이승아", "margin22": 2.1, "grade22": "경합", "result22": "승", "unopposed22": false, "votesGap22": 145, "cands22": [{"party": "더불어민주당", "name": "이승아", "votes": 3508}, {"party": "국민의힘", "name": "백성철", "votes": 3363}]}, {"id": 12, "region": "제주시", "name": "연동갑", "fullName": "연동갑선거구", "interest": "경합우세", "candidates": [{"party": "더불어민주당", "name": "양영식"}, {"party": "국민의힘", "name": "강경문"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "양영식", "margin22": 14.1, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 1053, "cands22": [{"party": "더불어민주당", "name": "양영식", "votes": 4260}, {"party": "국민의힘", "name": "김철웅", "votes": 3207}]}, {"id": 13, "region": "제주시", "name": "연동을", "fullName": "연동을선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "강철남"}, {"party": "국민의힘", "name": "김지은"}, {"party": "진보당", "name": "정근효"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "강철남", "margin22": 6.8, "grade22": "경합우세", "result22": "승", "unopposed22": false, "votesGap22": 567, "cands22": [{"party": "더불어민주당", "name": "강철남", "votes": 4470}, {"party": "국민의힘", "name": "하민철", "votes": 3903}]}, {"id": 14, "region": "제주시", "name": "노형동갑", "fullName": "노형동갑선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "양경호"}, {"party": "국민의힘", "name": "김세훈"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "양경호", "margin22": 9.3, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 927, "cands22": [{"party": "더불어민주당", "name": "양경호", "votes": 5455}, {"party": "국민의힘", "name": "김채규", "votes": 4528}]}, {"id": 15, "region": "제주시", "name": "노형동을", "fullName": "노형동을선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "이경심"}, {"party": "개혁신당", "name": "이건우"}, {"party": "무소속", "name": "고민수"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "이상봉", "margin22": 26.6, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 3255, "cands22": [{"party": "더불어민주당", "name": "이상봉", "votes": 7755}, {"party": "국민의힘", "name": "고민수", "votes": 4500}]}, {"id": 16, "region": "제주시", "name": "외도·이호·도두", "fullName": "외도동·이호동·도두동선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "송창권"}, {"party": "개혁신당", "name": "양해두"}, {"party": "진보당", "name": "김형미"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "송창권", "margin22": 20.3, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 2310, "cands22": [{"party": "더불어민주당", "name": "송창권", "votes": 6850}, {"party": "국민의힘", "name": "양해두", "votes": 4540}]}, {"id": 17, "region": "제주시", "name": "한림읍", "fullName": "한림읍선거구", "interest": "경합열세", "candidates": [{"party": "더불어민주당", "name": "김도엽"}, {"party": "국민의힘", "name": "이남근"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "양용만", "margin22": -7.0, "grade22": "열세", "result22": "패", "unopposed22": false, "votesGap22": -736, "cands22": [{"party": "더불어민주당", "name": "김성수", "votes": 4889}, {"party": "국민의힘", "name": "양용만", "votes": 5625}]}, {"id": 18, "region": "제주시", "name": "애월읍갑", "fullName": "애월읍갑선거구", "interest": "경합", "candidates": [{"party": "더불어민주당", "name": "장정훈"}, {"party": "국민의힘", "name": "강재섭"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "고태민", "margin22": -16.5, "grade22": "열세", "result22": "패", "unopposed22": false, "votesGap22": -1042, "cands22": [{"party": "더불어민주당", "name": "장정훈", "votes": 2636}, {"party": "국민의힘", "name": "고태민", "votes": 3678}]}, {"id": 19, "region": "제주시", "name": "애월읍을", "fullName": "애월읍을선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "강봉직"}], "unopposed": true, "unopposedWinner": "강봉직", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "강봉직", "margin22": 22.8, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 2149, "cands22": [{"party": "더불어민주당", "name": "강봉직", "votes": 5785}, {"party": "국민의힘", "name": "박은경", "votes": 3636}]}, {"id": 20, "region": "제주시", "name": "구좌·우도", "fullName": "구좌읍·우도면선거구", "interest": "제주시을 · 경합우세", "candidates": [{"party": "더불어민주당", "name": "강동우"}, {"party": "조국혁신당", "name": "양정철"}, {"party": "무소속", "name": "부지성"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "김경학", "margin22": null, "grade22": "우세", "result22": "승", "unopposed22": true, "votesGap22": null, "cands22": [{"party": "더불어민주당", "name": "김경학", "votes": null}]}, {"id": 21, "region": "제주시", "name": "조천읍", "fullName": "조천읍선거구", "interest": "제주시을 · 경합", "candidates": [{"party": "더불어민주당", "name": "김석진"}, {"party": "무소속", "name": "김덕홍"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "현길호", "margin22": 5.6, "grade22": "경합우세", "result22": "승", "unopposed22": false, "votesGap22": 673, "cands22": [{"party": "더불어민주당", "name": "현길호", "votes": 6348}, {"party": "국민의힘", "name": "김덕홍", "votes": 5675}]}, {"id": 22, "region": "제주시", "name": "한경·추자", "fullName": "한경면·추자면선거구", "interest": "경합우세", "candidates": [{"party": "더불어민주당", "name": "김승준"}, {"party": "국민의힘", "name": "김원찬"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "김승준", "margin22": 0.5, "grade22": "경합", "result22": "승", "unopposed22": false, "votesGap22": 32, "cands22": [{"party": "더불어민주당", "name": "김승준", "votes": 3069}, {"party": "국민의힘", "name": "김원찬", "votes": 3037}]}, {"id": 23, "region": "서귀포시", "name": "송산·효돈·영천", "fullName": "송산동·효돈동·영천동선거구", "interest": "경합열세", "candidates": [{"party": "더불어민주당", "name": "오정훈"}, {"party": "국민의힘", "name": "강충룡"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "강충룡", "margin22": -21.9, "grade22": "열세", "result22": "패", "unopposed22": false, "votesGap22": -1529, "cands22": [{"party": "더불어민주당", "name": "김주용", "votes": 2723}, {"party": "국민의힘", "name": "강충룡", "votes": 4252}]}, {"id": 24, "region": "서귀포시", "name": "정방·중앙·천지·서홍", "fullName": "정방동·중앙동·천지동·서홍동선거구", "interest": "경합", "candidates": [{"party": "더불어민주당", "name": "오은초"}, {"party": "국민의힘", "name": "강하영"}, {"party": "무소속", "name": "강상수"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "강상수", "margin22": -5.3, "grade22": "경합열세", "result22": "패", "unopposed22": false, "votesGap22": -424, "cands22": [{"party": "더불어민주당", "name": "김용범", "votes": 3813}, {"party": "국민의힘", "name": "강상수", "votes": 4237}]}, {"id": 25, "region": "서귀포시", "name": "동홍동", "fullName": "동홍동선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "김대진"}, {"party": "국민의힘", "name": "오현승"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "김대진", "margin22": 9.9, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 889, "cands22": [{"party": "더불어민주당", "name": "김대진", "votes": 4943}, {"party": "국민의힘", "name": "오현승", "votes": 4054}]}, {"id": 26, "region": "서귀포시", "name": "대륜동", "fullName": "대륜동선거구", "interest": "경합열세", "candidates": [{"party": "더불어민주당", "name": "강명균"}, {"party": "국민의힘", "name": "이정엽"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "이정엽", "margin22": -6.6, "grade22": "경합열세", "result22": "패", "unopposed22": false, "votesGap22": -445, "cands22": [{"party": "더불어민주당", "name": "강호상", "votes": 3128}, {"party": "국민의힘", "name": "이정엽", "votes": 3573}]}, {"id": 27, "region": "서귀포시", "name": "대천·중문·예래", "fullName": "대천동·중문동·예래동선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "임정은"}], "unopposed": true, "unopposedWinner": "임정은", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "임정은", "margin22": 6.9, "grade22": "경합우세", "result22": "승", "unopposed22": false, "votesGap22": 882, "cands22": [{"party": "더불어민주당", "name": "임정은", "votes": 6810}, {"party": "국민의힘", "name": "현정화", "votes": 5928}]}, {"id": 28, "region": "서귀포시", "name": "대정읍", "fullName": "대정읍선거구", "interest": "경합우세", "candidates": [{"party": "더불어민주당", "name": "이경철"}, {"party": "국민의힘", "name": "이향"}, {"party": "무소속", "name": "송호철"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "무소속", "winner22": "양병우", "margin22": -27.8, "grade22": "무소속텃밭", "result22": "패", "unopposed22": false, "votesGap22": -2645, "cands22": [{"party": "더불어민주당", "name": "이서윤", "votes": 1543}, {"party": "국민의힘", "name": "이윤명", "votes": 3767}, {"party": "무소속", "name": "양병우", "votes": 4188}]}, {"id": 29, "region": "서귀포시", "name": "남원읍", "fullName": "남원읍선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "송영훈"}], "unopposed": true, "unopposedWinner": "송영훈", "unopposedParty": "더불어민주당", "party22": "더불어민주당", "winner22": "송영훈", "margin22": null, "grade22": "우세", "result22": "승", "unopposed22": true, "votesGap22": null, "cands22": [{"party": "더불어민주당", "name": "송영훈", "votes": null}]}, {"id": 30, "region": "서귀포시", "name": "성산읍", "fullName": "성산읍선거구", "interest": "경합열세", "candidates": [{"party": "더불어민주당", "name": "양홍식"}, {"party": "국민의힘", "name": "현기종"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "현기종", "margin22": -6.0, "grade22": "경합열세", "result22": "패", "unopposed22": false, "votesGap22": -509, "cands22": [{"party": "더불어민주당", "name": "고용호", "votes": 3981}, {"party": "국민의힘", "name": "현기종", "votes": 4490}]}, {"id": 31, "region": "서귀포시", "name": "안덕면", "fullName": "안덕면선거구", "interest": "", "candidates": [{"party": "더불어민주당", "name": "하성용"}, {"party": "국민의힘", "name": "조훈배"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "더불어민주당", "winner22": "하성용", "margin22": 33.7, "grade22": "우세", "result22": "승", "unopposed22": false, "votesGap22": 1854, "cands22": [{"party": "더불어민주당", "name": "하성용", "votes": 3675}, {"party": "국민의힘", "name": "장성호", "votes": 1821}]}, {"id": 32, "region": "서귀포시", "name": "표선면", "fullName": "표선면선거구", "interest": "경합우세", "candidates": [{"party": "더불어민주당", "name": "한동훈"}, {"party": "국민의힘", "name": "현경주"}, {"party": "무소속", "name": "이성인"}], "unopposed": false, "unopposedWinner": null, "unopposedParty": null, "party22": "국민의힘", "winner22": "강연호", "margin22": -30.5, "grade22": "열세", "result22": "패", "unopposed22": false, "votesGap22": -1883, "cands22": [{"party": "더불어민주당", "name": "김승훈", "votes": 2150}, {"party": "국민의힘", "name": "강연호", "votes": 4033}]}];
+const PARTY = {
+  "더불어민주당":{c:"var(--dem)",s:"민주",k:"dem"},
+  "국민의힘":{c:"var(--ppp)",s:"국힘",k:"ppp"},
+  "조국혁신당":{c:"var(--cho)",s:"조국",k:"cho"},
+  "진보당":{c:"var(--jin)",s:"진보",k:"jin"},
+  "개혁신당":{c:"var(--ref)",s:"개혁",k:"ref"},
+  "정의당":{c:"var(--jus)",s:"정의",k:"jus"},
+  "무소속":{c:"var(--ind)",s:"무소속",k:"ind"},
+};
+const pc = p => (PARTY[p]||{c:"var(--ind)"}).c;
+const ps = p => (PARTY[p]||{s:p}).s;
+const DEM = "더불어민주당";
+const SEATS22 = DATA.filter(r=>r.result22==="승").length;
+const fmtGap = g => (g==null)?"":(g>0?"+":g<0?"-":"")+Math.abs(g).toLocaleString("ko-KR")+"표";
+
+let votes = {};      // id -> {candIndex: number}
+let filter = "all";
+
+/* ---------- storage ---------- */
+function load(){
+  try{ const v = localStorage.getItem("jeju_tally_v1"); if(v){ votes = JSON.parse(v); } }catch(e){}
+}
+let saveT=null;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(()=>{
+    try{ localStorage.setItem("jeju_tally_v1", JSON.stringify(votes));
+      document.getElementById("savedAt").textContent = "저장됨 "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
+    }catch(e){}
+  },400);
+}
+
+/* ---------- compute ---------- */
+function gradeOf(m){
+  if(m==null) return null;
+  const a=Math.abs(m);
+  if(a<3) return "경합";
+  if(m>0) return a<7?"경합우세":"우세";
+  return a<7?"경합열세":"열세";
+}
+function compute(r){
+  if(r.unopposed){
+    return {decided:true,unopposed:true,winParty:r.unopposedParty,winName:r.unopposedWinner,
+      demMargin:null,grade:"무투표",demWin:r.unopposedParty===DEM,swing:null,
+      verdict:r.result22==="승"?"무투표사수":"무투표"};
+  }
+  const v = votes[r.id]||{};
+  const cs = r.candidates.map((c,i)=>({...c,votes:(v[i]==null||v[i]==="")?null:Number(v[i])}));
+  const any = cs.some(c=>c.votes!=null);
+  const total = cs.reduce((s,c)=>s+(c.votes||0),0);
+  if(!any || total<=0) return {decided:false,cs,total:0};
+  cs.forEach(c=>c.rate=(c.votes||0)/total*100);
+  const sorted=[...cs].map((c,i)=>c).sort((a,b)=>(b.votes||0)-(a.votes||0));
+  const win=sorted[0], second=sorted[1]||{votes:0,rate:0,party:"",name:""};
+  const dem=cs.find(c=>c.party===DEM);
+  let demMargin=null, demVoteGap=null;
+  if(dem){
+    demMargin = (win.party===DEM)? dem.rate-second.rate : dem.rate-win.rate;
+    demVoteGap = (win.party===DEM)? (win.votes||0)-(second.votes||0) : (dem.votes||0)-(win.votes||0);
+  }
+  const demWin = win.party===DEM;
+  const was = r.result22==="승";
+  let verdict = was&&demWin?"사수":was&&!demWin?"상실":!was&&demWin?"탈환":"미탈환";
+  const swing = (demMargin!=null && r.margin22!=null)? demMargin-r.margin22 : null;
+  return {decided:true,cs,total,sorted,win,second,demMargin,demVoteGap,grade:gradeOf(demMargin),demWin,verdict,swing,
+    voteGap:(win.votes||0)-(second.votes||0)};
+}
+
+/* ---------- aggregate ---------- */
+function aggregate(){
+  let demNow=0, decided=0, gain=0, loss=0, byParty={};
+  DATA.forEach(r=>{
+    const c=compute(r);
+    if(c.decided){ decided++;
+      if(c.demWin) demNow++;
+      const wp = c.unopposed?c.winParty:c.win.party;
+      byParty[wp]=(byParty[wp]||0)+1;
+      if(c.verdict==="탈환") gain++;
+      if(c.verdict==="상실") loss++;
+    }
+  });
+  return {demNow,decided,gain,loss,byParty};
+}
+
+/* ---------- render KPI ---------- */
+function renderKPI(a){
+  const dd = a.demNow-SEATS22;
+  const ddTxt = dd>0?`▲ +${dd}`:dd<0?`▼ ${dd}`:"± 0";
+  const ddCls = dd>0?"up":dd<0?"down":"flat";
+  const el=document.getElementById("kpis");
+  el.innerHTML = `
+   <div class="kpi dem"><span class="barpip"></span><div class="t">민주 지역구 의석 (현재)</div>
+     <div class="big">${a.demNow}<small>/ 32석</small></div>
+     <div class="delta ${ddCls}">${ddTxt} <span style="color:var(--txt3);font-family:var(--sans);font-weight:500">vs 8회 ${SEATS22}석</span></div></div>
+   <div class="kpi gain"><span class="barpip"></span><div class="t">탈환 (8회 패→9회 승)</div>
+     <div class="big">${a.gain}<small>곳</small></div>
+     <div class="delta flat" style="color:var(--txt3)">민주 순증 후보지</div></div>
+   <div class="kpi loss"><span class="barpip"></span><div class="t">상실 (8회 승→9회 패)</div>
+     <div class="big">${a.loss}<small>곳</small></div>
+     <div class="delta flat" style="color:var(--txt3)">방어 실패 지역</div></div>
+   <div class="kpi cont"><span class="barpip"></span><div class="t">개표 반영 선거구</div>
+     <div class="big">${a.decided}<small>/ 32</small></div>
+     <div class="delta flat" style="color:var(--txt3)">잔여 ${32-a.decided}곳</div></div>`;
+  const pct=Math.round(a.decided/32*100);
+  document.getElementById("progPct").textContent=pct+"%";
+  document.getElementById("progBar").style.width=pct+"%";
+}
+
+/* ---------- seat bars ---------- */
+function renderSeats(a){
+  const order=["더불어민주당","국민의힘","조국혁신당","진보당","개혁신당","정의당","무소속"];
+  const c22={}; DATA.forEach(r=>{ const p=r.party22; c22[p]=(c22[p]||0)+1; });
+  function bar(map,total){
+    let h="";
+    order.forEach(p=>{ const n=map[p]||0; if(!n)return;
+      h+=`<span style="flex-basis:${n/Math.max(total,1)*100}%;background:${pc(p)}">${n}</span>`; });
+    const rest = total - order.reduce((s,p)=>s+(map[p]||0),0);
+    if(rest>0) h+=`<span style="flex-basis:${rest/total*100}%;background:var(--line2);color:var(--txt3)">${rest}</span>`;
+    return h;
+  }
+  const demc=a.byParty[DEM]||0, ppc=a.byParty["국민의힘"]||0;
+  document.getElementById("seats").innerHTML=`
+    <div class="seatrow"><div class="head"><span>제8회 (2022) 확정</span><span><b>민주 ${c22[DEM]||0}</b> · 국힘 ${c22["국민의힘"]||0} · 기타 ${32-(c22[DEM]||0)-(c22["국민의힘"]||0)}</span></div>
+      <div class="stack">${bar(c22,32)}</div></div>
+    <div class="seatrow"><div class="head"><span>제9회 (2026) 현재</span><span><b>민주 ${demc}</b> · 국힘 ${ppc} · 미정 ${32-a.decided}</span></div>
+      <div class="stack">${bar(a.byParty,32)}</div></div>`;
+  document.getElementById("legend").innerHTML = order.filter(p=>(a.byParty[p]||0)||(c22[p]||0))
+    .map(p=>`<span><i style="background:${pc(p)}"></i>${p}</span>`).join("");
+}
+
+/* ---------- scatter ---------- */
+function renderScatter(){
+  const W=460,H=300,pad=38, lo=-40, hi=40;
+  const sx=v=>pad+(v-lo)/(hi-lo)*(W-pad-14);
+  const sy=v=>H-pad-(v-lo)/(hi-lo)*(H-pad-14);
+  let g=`<rect x="0" y="0" width="${W}" height="${H}" fill="transparent"/>`;
+  // 사분면 음영: 탈환(좌상, 8회 패→9회 승) / 상실(우하, 8회 승→9회 패)
+  g+=`<rect x="${sx(lo)}" y="${sy(hi)}" width="${sx(0)-sx(lo)}" height="${sy(0)-sy(hi)}" fill="var(--gain)" opacity=".06"/>`;
+  g+=`<rect x="${sx(0)}" y="${sy(0)}" width="${sx(hi)-sx(0)}" height="${sy(lo)-sy(0)}" fill="var(--loss)" opacity=".055"/>`;
+  g+=`<text x="${sx(lo)+7}" y="${sy(hi)+15}" fill="var(--gain)" opacity=".8" font-size="9.5" text-anchor="start">탈환 영역</text>`;
+  g+=`<text x="${sx(hi)-7}" y="${sy(lo)-7}" fill="var(--loss)" opacity=".8" font-size="9.5" text-anchor="end">상실 영역</text>`;
+  // grid + axes
+  [-30,-15,0,15,30].forEach(t=>{
+    g+=`<line x1="${sx(t)}" y1="14" x2="${sx(t)}" y2="${H-pad}" stroke="var(--line)" stroke-width="${t===0?1.2:.6}"/>`;
+    g+=`<line x1="${pad}" y1="${sy(t)}" x2="${W-14}" y2="${sy(t)}" stroke="var(--line)" stroke-width="${t===0?1.2:.6}"/>`;
+    g+=`<text x="${sx(t)}" y="${H-pad+13}" text-anchor="middle">${t>0?"+"+t:t}</text>`;
+    g+=`<text x="${pad-6}" y="${sy(t)+3}" text-anchor="end">${t>0?"+"+t:t}</text>`;
+  });
+  // 45 line
+  g+=`<line x1="${sx(lo)}" y1="${sy(lo)}" x2="${sx(hi)}" y2="${sy(hi)}" stroke="var(--gold)" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/>`;
+  g+=`<text x="${W-16}" y="${sy(hi)+14}" text-anchor="end" fill="var(--gold)" opacity=".8">45° 동률선</text>`;
+  // axis labels
+  g+=`<text x="${W/2}" y="${H-4}" text-anchor="middle" fill="var(--txt2)">← 8회 민주 격차(%p) →</text>`;
+  g+=`<text transform="translate(11,${H/2}) rotate(-90)" text-anchor="middle" fill="var(--txt2)">← 9회 민주 격차(%p) →</text>`;
+  let pts="";
+  DATA.forEach(r=>{
+    const c=compute(r);
+    if(c.demMargin==null||r.margin22==null) return;
+    const x=Math.max(lo,Math.min(hi,r.margin22)), y=Math.max(lo,Math.min(hi,c.demMargin));
+    const improved=c.demMargin>=r.margin22;
+    pts+=`<circle class="sc-dot" cx="${sx(x)}" cy="${sy(y)}" r="5.5"
+      fill="${improved?'var(--gain)':'var(--loss)'}" fill-opacity=".82"
+      data-nm="${r.name}" data-x="${r.margin22.toFixed(1)}" data-y="${c.demMargin.toFixed(1)}" data-s="${c.swing.toFixed(1)}"/>`;
+  });
+  if(!pts) g+=`<text x="${(sx(lo)+sx(hi))/2}" y="${(sy(hi)+sy(lo))/2}" text-anchor="middle" fill="var(--txt3)" font-size="11">득표수를 입력하면 선거구별 점이 찍힙니다</text>`;
+  document.getElementById("scatter").innerHTML=g+pts;
+  document.querySelectorAll(".sc-dot").forEach(d=>{
+    d.onmousemove=e=>{ const t=document.getElementById("tip");
+      t.innerHTML=`<div class="tn">${d.dataset.nm}</div><div class="tr">8회 ${d.dataset.x>=0?"+":""}${d.dataset.x} → 9회 ${d.dataset.y>=0?"+":""}${d.dataset.y}<br>스윙 ${d.dataset.s>=0?"+":""}${d.dataset.s}%p</div>`;
+      t.style.left=Math.min(e.clientX+14,innerWidth-210)+"px"; t.style.top=(e.clientY+14)+"px"; t.style.opacity=1; };
+    d.onmouseleave=()=>document.getElementById("tip").style.opacity=0;
+  });
+}
+
+/* ---------- riding cards ---------- */
+function swingTag(s){
+  if(s==null) return "";
+  const cls=s>0?"up":s<0?"down":"flat";
+  const bg=s>0?"var(--gain-glow)":s<0?"var(--loss-glow)":"transparent";
+  const col=s>0?"var(--gain)":s<0?"var(--loss)":"var(--txt3)";
+  return `<span class="swing" style="background:${bg};color:${col}">${s>0?"▲+":s<0?"▼":""}${s.toFixed(1)}p</span>`;
+}
+function verdictBadge(c){
+  if(c.unopposed) return `<span class="verdict v-unop">무투표 당선</span>`;
+  if(!c.decided) return `<span class="verdict v-wait">미입력</span>`;
+  const map={"탈환":"v-gain","상실":"v-loss","사수":"v-hold","미탈환":"v-miss"};
+  return `<span class="verdict ${map[c.verdict]||'v-wait'}">${c.verdict}</span>`;
+}
+function passFilter(r,c){
+  if(filter==="all") return true;
+  if(filter==="eul") return !!(r.interest && r.interest.includes("제주시을"));
+  if(filter==="forecast") return !!(r.interest && r.interest.includes("경합"));
+  if(filter==="hist22") return ["경합","경합우세","경합열세"].includes(r.grade22);
+  if(filter==="todo") return !r.unopposed && !c.decided;
+  return true;
+}
+function cardHtml(r){
+  const c=compute(r);
+  const state = c.unopposed?'unop':(c.decided?'done':'todo');
+  let cls="card "+state+(r.interest?" watch":"");
+  if(c.decided && c.verdict==="탈환") cls+=" gain";
+  if(c.decided && c.verdict==="상실") cls+=" loss";
+  let barC="var(--line)";
+  if(c.unopposed) barC=pc(c.winParty);
+  else if(c.decided) barC=pc(c.win.party);
+  let tags="";
+  if(r.interest){
+    tags = r.interest.split("·").map(s=>s.trim()).filter(Boolean).map(s=>{
+      if(s==="제주시을") return `<span class="tag eul" title="김한규 의원 지역구(제주시을)">제주시을</span>`;
+      if(s==="경합우세") return `<span class="tag comp" title="자체 전망: 경합 (민주 소폭 우위로 봄) — 결과 미정">경합우세</span>`;
+      if(s==="경합열세") return `<span class="tag comp" title="자체 전망: 경합 (민주 소폭 열세로 봄) — 결과 미정">경합열세</span>`;
+      if(s==="경합") return `<span class="tag comp" title="자체 전망: 순수 경합 (예측 어려운 박빙)">경합</span>`;
+      return `<span class="tag watch">${s}</span>`;
+    }).join("");
+  }
+  const m22 = r.margin22==null?"무투표":(r.margin22>0?"+":"")+r.margin22.toFixed(1)+"p";
+  const v22 = r.votesGap22==null?"":" · "+fmtGap(r.votesGap22);
+  // input body
+  let body="";
+  if(c.unopposed){
+    body=`<div class="unop-badge"><span class="star">★</span><span>단독 출마 <b>무투표 당선</b> — ${c.winName} (${ps(c.winParty)}) · 입력 불필요</span></div>`;
+  }else{
+    const hint = state==='todo'?`<div class="inputhint">✎ 후보별 득표수를 입력하세요</div>`:'';
+    const rows = r.candidates.map((cand,i)=>{
+      const v=(votes[r.id]||{})[i];
+      const filled = v!=null && v!=="";
+      const lead = c.decided && c.win && c.win.name===cand.name && (c.win.votes||0)>0;
+      const rate = c.decided && c.total>0 && filled? ((Number(v)/c.total*100).toFixed(1)+"%") : "";
+      return `<div class="cand">
+        <span class="dot" style="background:${pc(cand.party)}"></span>
+        <span class="who">${cand.name}<span class="pty">${ps(cand.party)}</span>${lead?'<span class="lead">당선</span>':''}</span>
+        <span class="rt">${rate}</span>
+        <input type="text" inputmode="numeric" placeholder="득표수" value="${filled?Number(v).toLocaleString('ko-KR'):''}" class="${filled?'filled':''}" data-id="${r.id}" data-ci="${i}" aria-label="${cand.name} 득표수">
+      </div>`;
+    }).join("");
+    body = hint+rows;
+  }
+  // result summary
+  let now="";
+  if(c.unopposed){
+    now=`<div class="now"><span class="win" style="color:${pc(c.winParty)}">${c.winName} <span style="color:var(--txt3);font-size:11px">(${ps(c.winParty)})</span></span>
+      <span class="nums" style="color:var(--gold);font-weight:700">무투표 당선</span></div>`;
+  }else if(c.decided){
+    const dmCol = c.demMargin>=0?'#76a8ff':'var(--ppp)';
+    now=`<div class="now">
+      <span class="win" style="color:${pc(c.win.party)}">${c.win.name} <span style="color:var(--txt3);font-size:11px">(${ps(c.win.party)})</span></span>
+      <span class="nums">
+        <span class="numline" style="color:${dmCol}">${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)}%p · ${fmtGap(c.demVoteGap)}</span>
+        <span class="sub2">${c.grade||''}${swingTag(c.swing)}</span>
+      </span></div>`;
+  }else{
+    now=`<div class="now"><span style="color:var(--txt3);font-size:11.5px">개표 결과 대기 중…</span></div>`;
+  }
+  // 8회 후보 상세
+  const cs22 = r.cands22||[];
+  let histRows;
+  if(cs22.every(x=>x.votes==null)){
+    histRows = `<div class="hcand"><span class="hdot" style="background:${pc(cs22[0].party)}"></span>
+      <span class="hwho" style="color:var(--txt)">${cs22[0].name}<span class="hpty">${ps(cs22[0].party)}</span><span class="hwin">당선</span></span>
+      <span class="hv" style="width:auto;color:var(--txt3);font-weight:500">무투표 당선</span></div>`;
+  }else{
+    const tot22=cs22.reduce((s,x)=>s+(x.votes||0),0);
+    const win22=[...cs22].sort((a,b)=>b.votes-a.votes)[0].name;
+    histRows = cs22.map(x=>{
+      const rate=tot22>0?(x.votes/tot22*100).toFixed(1)+"%":"";
+      const w=x.name===win22;
+      return `<div class="hcand"><span class="hdot" style="background:${pc(x.party)}"></span>
+        <span class="hwho" style="${w?'color:var(--txt);font-weight:600':''}">${x.name}<span class="hpty">${ps(x.party)}</span>${w?'<span class="hwin">당선</span>':''}</span>
+        <span class="hr">${rate}</span>
+        <span class="hv">${x.votes.toLocaleString("ko-KR")}</span></div>`;
+    }).join("");
+  }
+  const histSum = r.margin22==null?"무투표 당선 (경쟁 없음)"
+    :`민주 격차 ${r.margin22>0?'+':''}${r.margin22.toFixed(1)}%p${v22} · ${r.grade22}`;
+
+  return `<div class="${cls}" data-card="${r.id}">
+    <div class="cbar" style="background:${barC}"></div>
+    <div class="ctop">
+      <div><div class="nm">${r.name}</div>
+        <div class="meta">${tags}<span>${r.candidates.length===1?'단독 출마':r.candidates.length+'자 구도'}</span></div></div>
+      <div style="text-align:right">${verdictBadge(c)}</div>
+    </div>
+    <div class="seclabel now9">9회 (2026)</div>
+    <div class="cbody">${body}</div>
+    ${now}
+    <div class="hist">
+      <div class="seclabel">8회 (2022) 결과</div>
+      ${histRows}
+      <div class="histsum">${histSum}</div>
+    </div></div>`;
+}
+function renderRidings(){
+  const regions=["제주시","서귀포시"];
+  let html="";
+  regions.forEach(reg=>{
+    const list=DATA.filter(r=>r.region===reg).filter(r=>passFilter(r,compute(r)));
+    if(!list.length) return;
+    html+=`<div class="rhead">${reg} <span class="cnt">${list.length}석</span></div><div class="grid">`;
+    html+=list.map(cardHtml).join("");
+    html+=`</div>`;
+  });
+  if(!html) html=`<div style="text-align:center;color:var(--txt3);padding:40px">해당 조건의 선거구가 없습니다.</div>`;
+  document.getElementById("ridings").innerHTML=html;
+}
+
+/* ---------- render all ---------- */
+function renderAll(){
+  const a=aggregate();
+  renderKPI(a); renderSeats(a); renderScatter(); renderRidings();
+}
+
+/* ---------- events ---------- */
+document.addEventListener("input",e=>{
+  if(e.target.matches("input[data-id]")){
+    const id=+e.target.dataset.id, ci=+e.target.dataset.ci;
+    const raw=e.target.value.replace(/[^0-9]/g,'');
+    votes[id]=votes[id]||{};
+    votes[id][ci]= raw===""? "" : raw;
+    e.target.value = raw===""? "" : Number(raw).toLocaleString('ko-KR');
+    e.target.classList.toggle("filled", raw!=="");
+    save();
+    // re-render aggregates + scatter, and this card's result region (light)
+    const a=aggregate(); renderKPI(a); renderSeats(a); renderScatter();
+    // update card live (rates + winner + result strip) without losing focus
+    const card=e.target.closest(".card"); const r=DATA.find(x=>x.id===id);
+    refreshCard(card,r);
+  }
+});
+function refreshCard(card,r){
+  const c=compute(r);
+  const state = c.unopposed?'unop':(c.decided?'done':'todo');
+  card.querySelectorAll(".cand").forEach((row,i)=>{
+    const v=(votes[r.id]||{})[i];
+    const filled = v!=null && v!=="";
+    const rt=row.querySelector(".rt");
+    rt.textContent = (c.decided&&c.total>0&&filled)?((Number(v)/c.total*100).toFixed(1)+"%"):"";
+    const inp=row.querySelector("input"); if(inp) inp.classList.toggle("filled",filled);
+    const lead=row.querySelector(".lead");
+    const isLead = c.decided && c.win && c.win.name===r.candidates[i].name && (c.win.votes||0)>0;
+    if(isLead && !lead){ row.querySelector(".who").insertAdjacentHTML("beforeend",'<span class="lead">당선</span>'); }
+    if(!isLead && lead){ lead.remove(); }
+  });
+  // state classes
+  card.classList.toggle("todo", state==='todo');
+  card.classList.toggle("done", state==='done');
+  card.classList.toggle("gain", c.decided&&c.verdict==="탈환");
+  card.classList.toggle("loss", c.decided&&c.verdict==="상실");
+  // input hint
+  const hint=card.querySelector(".inputhint");
+  if(state==='todo' && !hint){ card.querySelector(".cbody").insertAdjacentHTML("afterbegin",'<div class="inputhint">✎ 후보별 득표수를 입력하세요</div>'); }
+  if(state!=='todo' && hint){ hint.remove(); }
+  // bar + verdict + result
+  card.querySelector(".cbar").style.background = c.decided?pc(c.win.party):"var(--line)";
+  card.querySelector(".verdict").outerHTML = verdictBadge(c);
+  const res=card.querySelector(".now");
+  if(res){
+    if(c.decided){
+      const dmCol = c.demMargin>=0?'#76a8ff':'var(--ppp)';
+      res.outerHTML=`<div class="now"><span class="win" style="color:${pc(c.win.party)}">${c.win.name} <span style="color:var(--txt3);font-size:11px">(${ps(c.win.party)})</span></span>
+        <span class="nums">
+          <span class="numline" style="color:${dmCol}">${c.demMargin>=0?'+':''}${c.demMargin.toFixed(1)}%p · ${fmtGap(c.demVoteGap)}</span>
+          <span class="sub2">${c.grade||''}${swingTag(c.swing)}</span>
+        </span></div>`;
+    }else{
+      res.outerHTML=`<div class="now"><span style="color:var(--txt3);font-size:11.5px">개표 결과 대기 중…</span></div>`;
+    }
+  }
+}
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter" && e.target.matches("input[data-id]")){
+    e.preventDefault();
+    const inputs=[...document.querySelectorAll("input[data-id]")];
+    const i=inputs.indexOf(e.target);
+    if(inputs[i+1]) inputs[i+1].focus();
+  }
+});
+document.getElementById("filterSeg").addEventListener("click",e=>{
+  if(e.target.tagName!=="BUTTON")return;
+  document.querySelectorAll("#filterSeg button").forEach(b=>b.classList.remove("on"));
+  e.target.classList.add("on"); filter=e.target.dataset.f; renderRidings();
+});
+function makeFakeVotes(){
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+  votes={};
+  DATA.forEach(r=>{
+    if(r.unopposed) return;                 // 무투표 8곳은 자동 당선
+    const cands=r.candidates;
+    const base=(r.cands22&&r.cands22.some(c=>c.votes))? r.cands22.reduce((s,c)=>s+(c.votes||0),0) : Math.round(rnd(7000,12000));
+    const T=Math.max(3000,Math.round(base*rnd(0.92,1.08)));
+    const demI=cands.findIndex(c=>c.party===DEM);
+    const v={};
+    if(demI>=0 && cands.length>=2){
+      let target=(r.margin22!=null?r.margin22:0)+rnd(-7,9);   // 8회 격차 + 평균 +1%p 스윙
+      target=Math.max(-42,Math.min(42,target));
+      const demVotes=Math.round(T*(50+target/2)/100);
+      let rem=Math.max(0,T-demVotes);
+      const others=cands.map((c,i)=>i).filter(i=>i!==demI);
+      others.forEach((oi,k)=>{ v[oi]= k===0 ? Math.round(rem*(others.length>1?0.82:1)) : Math.round(rem*0.18/(others.length-1)); });
+      v[demI]=demVotes;
+    }else{
+      cands.forEach((c,i)=> v[i]=Math.round(T/cands.length*rnd(0.55,1.45)));
+    }
+    votes[r.id]=v;
+  });
+  save(); renderAll();
+}
+document.getElementById("btnDemo").onclick=()=>{
+  if(Object.keys(votes).length && !confirm("기존 입력을 덮어쓰고 가상 결과로 채웁니다. 진행할까요?"))return;
+  makeFakeVotes();
+};
+document.getElementById("btnReset").onclick=async()=>{
+  if(!confirm("입력한 모든 득표수를 지웁니다. 진행할까요?"))return;
+  votes={}; try{localStorage.removeItem("jeju_tally_v1");}catch(e){}
+  document.getElementById("savedAt").textContent=""; renderAll();
+};
+document.getElementById("btnCsv").onclick=()=>{
+  const rows=[["권역","선거구","8회당선정당","8회당선자","8회격차%p","8회표차","8회등급","9회당선정당","9회당선자","9회격차%p","9회표차","9회등급","스윙%p","판정","구도"]];
+  DATA.forEach(r=>{
+    const c=compute(r);
+    rows.push([r.region,r.name,r.party22,r.winner22,r.margin22??"",r.votesGap22??"",r.grade22,
+      c.unopposed?c.winParty:(c.decided?c.win.party:""),
+      c.unopposed?c.winName:(c.decided?c.win.name:""),
+      c.demMargin==null?"":c.demMargin.toFixed(1),
+      c.demVoteGap==null?"":c.demVoteGap,
+      c.unopposed?"무투표":(c.grade||""),
+      c.swing==null?"":c.swing.toFixed(1),
+      c.unopposed?(c.verdict):(c.decided?c.verdict:"미입력"),
+      r.candidates.length===1?"단독":r.candidates.length+"자"]);
+  });
+  const csv="\uFEFF"+rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(",")).join("\r\n");
+  const b=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const u=URL.createObjectURL(b); const a=document.createElement("a");
+  a.href=u; a.download="제주_8회vs9회_개표비교.csv"; a.click(); URL.revokeObjectURL(u);
+};
+
+/* ---------- init ---------- */
+load(); renderAll();
+</script>
