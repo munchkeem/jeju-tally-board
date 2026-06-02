@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="104" fill="#0a0e16"/>
+  <rect x="40" y="40" width="432" height="432" rx="78" fill="none" stroke="#23304a" stroke-width="6"/>
+  <!-- seat bars: 민주 / 국힘 / 기타 -->
+  <rect x="128" y="300" width="64" height="112" rx="10" fill="#2f74e0"/>
+  <rect x="224" y="244" width="64" height="168" rx="10" fill="#e8334a"/>
+  <rect x="320" y="338" width="64" height="74" rx="10" fill="#7a89a8"/>
+  <!-- swing line -->
+  <path d="M120 360 L260 250 L400 180" fill="none" stroke="#d9b35c" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="2 26"/>
+  <!-- check / ballot mark -->
+  <path d="M150 150 l44 44 l84 -96" fill="none" stroke="#19d39a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

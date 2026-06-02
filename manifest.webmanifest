@@ -1,0 +1,16 @@
+{
+  "name": "제주도의원 개표 상황판",
+  "short_name": "제주 개표판",
+  "description": "제주도의원 지역구 8회 vs 9회 실시간 개표 상황판",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0e16",
+  "theme_color": "#0a0e16",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "og.png", "sizes": "1200x630", "type": "image/png" }
+  ]
+}
