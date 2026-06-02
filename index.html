@@ -1,4 +1,16 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제주도의원 지역구 개표 상황판 — 8회 vs 9회</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jeju-tally-board.vercel.app/">
+<meta property="og:title" content="제주도의원 지역구 개표 상황판 — 8회 vs 9회">
+<meta property="og:description" content="후보 득표수를 입력하면 당선·격차·등급과 8회(2022) 대비 스윙·탈환·상실이 실시간 계산됩니다. 제주도 32개 지역구.">
+<meta property="og:image" content="https://jeju-tally-board.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="제주도의원 지역구 개표 상황판 — 8회 vs 9회">
+<meta name="twitter:image" content="https://jeju-tally-board.vercel.app/og.png">
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap');
@@ -177,10 +189,87 @@ h1 .v{color:var(--txt3);font-weight:600;letter-spacing:-.02em}
 .foot{margin-top:24px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--txt3);line-height:1.7}
 .foot b{color:var(--txt2)}
 @media(max-width:780px){
-  .kpis{grid-template-columns:repeat(2,1fr)} .panels{grid-template-columns:1fr}
-  .grid{grid-template-columns:1fr} body{padding:12px}
+  body{padding:12px}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .panels{grid-template-columns:1fr}
+  .grid{grid-template-columns:1fr}
   .seg{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
   .seg button{flex:1 0 auto;white-space:nowrap}
+  .hero{align-items:flex-start}
+  .prog{text-align:left;min-width:0;width:100%}
+  .progbar{width:100%;max-width:240px}
+  .scatter{height:auto}
+}
+@media(max-width:480px){
+  body{padding:10px}
+  .wrap{max-width:100%}
+  .hero{padding-bottom:12px;margin-bottom:14px;gap:10px}
+  .kicker{letter-spacing:.22em;font-size:10px;margin-bottom:4px}
+  .sub{font-size:12px;margin-top:6px;line-height:1.5}
+  .prog{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .prog .pct{font-size:24px}
+  .prog .lbl{margin-top:0;font-size:10px}
+  .progbar{flex-basis:100%;margin-top:4px;max-width:none}
+  .howto{padding:10px 13px;gap:6px 12px;font-size:12px;margin-bottom:14px;border-left-width:2px}
+  .howto .arrow{display:none}
+  .howto .step{align-items:flex-start}
+  .howto .num{width:17px;height:17px;font-size:10px}
+  .kpis{gap:8px;margin-bottom:12px}
+  .kpi{padding:11px 12px;border-radius:11px}
+  .kpi .t{font-size:10px;margin-bottom:6px;line-height:1.35}
+  .kpi .big{font-size:24px;gap:5px}
+  .kpi .big small{font-size:11px}
+  .kpi .delta{font-size:11px;margin-top:6px}
+  .panels{gap:10px;margin-bottom:12px}
+  .panel{padding:13px 14px;border-radius:12px}
+  .panel h3{font-size:11px;margin-bottom:11px;gap:6px;flex-wrap:wrap}
+  .panel h3 .hint{font-size:9.5px}
+  .seatrow{margin-bottom:12px}
+  .seatrow .head{font-size:11px;gap:6px;flex-wrap:wrap}
+  .stack{height:22px}
+  .stack > span{font-size:10px}
+  .legend{gap:8px 12px;font-size:10.5px;margin-top:10px}
+  .scatter text{font-size:13px}
+  .scatter-note{font-size:10.5px;line-height:1.6;margin-top:10px;padding-top:10px}
+  .toolbar{gap:8px;margin-bottom:12px}
+  .btn{padding:8px 12px;font-size:12px;border-radius:8px}
+  .seg{order:-1}
+  .seg button{padding:7px 11px;font-size:11.5px}
+  .saved{font-size:10px}
+  .rhead{font-size:14px;margin:14px 0 10px;gap:8px}
+  .rhead .cnt{font-size:11px}
+  .card{border-radius:11px}
+  .ctop{padding:11px 13px 8px;gap:7px}
+  .ctop .nm{font-size:14px}
+  .ctop .meta{font-size:10.5px;gap:5px;margin-top:3px}
+  .tag{font-size:9px;padding:1.5px 5px}
+  .verdict{font-size:10px;padding:3px 7px}
+  .seclabel{padding:8px 13px 2px;font-size:9px;letter-spacing:.1em}
+  .now{padding:5px 13px 2px;gap:6px}
+  .now .win{font-size:12.5px}
+  .now .nums .numline{font-size:11.5px}
+  .now .nums .sub2{font-size:10.5px}
+  .swing{font-size:10px;padding:2px 5px;margin-left:4px}
+  .cand{padding:6px 13px;gap:8px}
+  .cand .dot{width:9px;height:9px}
+  .cand .who{font-size:13px}
+  .cand .who .pty{font-size:10px;margin-left:5px}
+  .cand .who .lead{font-size:9px;padding:1.5px 5px;margin-left:5px}
+  .cand .rt{width:40px;font-size:11px}
+  .cand input{width:96px;font-size:14px;padding:7px 9px;border-radius:7px;border-width:1.5px}
+  .cand input::placeholder{font-size:11px}
+  .inputhint{font-size:10.5px;padding:3px 13px 5px}
+  .unop-badge{margin:4px 13px 11px;padding:10px 11px;font-size:12px;gap:7px;border-radius:9px}
+  .unop-badge .star{font-size:13px}
+  .hist{padding:3px 13px 11px}
+  .hcand{font-size:11px;padding:2px 0;gap:6px}
+  .hcand .hwho .hpty{font-size:9px;margin-left:3px}
+  .hcand .hwho .hwin{font-size:8px;padding:0 4px;margin-left:4px}
+  .hcand .hr{width:36px;font-size:10px}
+  .hcand .hv{width:48px;font-size:10.5px}
+  .histsum{font-size:10.5px;margin-top:5px;padding-top:5px}
+  .foot{font-size:10.5px;line-height:1.65;margin-top:18px;padding-top:11px}
+  #tip{font-size:10.5px;padding:6px 9px;max-width:170px}
 }
 </style>
 
